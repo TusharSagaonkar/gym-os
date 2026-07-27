@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/login', (req, res) => {
   if (res.locals.user) return res.redirect('/');
-  res.render('auth/login', { title: 'Login', user: null, error: null });
+  res.render('layout', { title: 'Login', user: null, error: null, body: 'auth/login' });
 });
 
 router.post('/login', async (req, res) => {
@@ -16,10 +16,11 @@ router.post('/login', async (req, res) => {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error || !data.user) {
-    return res.render('auth/login', {
+    return res.render('layout', {
       title: 'Login',
       user: null,
       error: 'Invalid email or password.',
+      body: 'auth/login',
     });
   }
 
@@ -54,7 +55,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/signup', (req, res) => {
-  res.render('auth/signup', { title: 'Join Gym', user: null, error: null });
+  res.render('layout', { title: 'Join Gym', user: null, error: null, body: 'auth/signup' });
 });
 
 router.post('/signup', async (req, res) => {
@@ -63,10 +64,11 @@ router.post('/signup', async (req, res) => {
   const { data, error } = await supabase.auth.signUp({ email, password });
 
   if (error) {
-    return res.render('auth/signup', {
+    return res.render('layout', {
       title: 'Join Gym',
       user: null,
       error: error.message,
+      body: 'auth/signup',
     });
   }
 
@@ -91,9 +93,10 @@ router.get('/onboarding', requireAuth, async (req, res) => {
 
   if (profile) return res.redirect('/');
 
-  res.render('auth/onboarding', {
+  res.render('layout', {
     title: 'Complete Setup',
-    user: { id: res.locals.user.id },
+    user: res.locals.user,
+    body: 'auth/onboarding',
     error: null,
   });
 });
