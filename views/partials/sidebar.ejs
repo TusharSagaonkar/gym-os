@@ -1,10 +1,15 @@
-<nav class="w-64 bg-gray-900 text-white flex flex-col h-full shrink-0">
-  <div class="p-5 border-b border-gray-800">
-    <h1 class="text-xl font-bold tracking-tight">GYM OS</h1>
-    <p class="text-xs text-gray-400 mt-0.5"><%= user.role.toUpperCase() %></p>
+<nav class="sidebar w-64 bg-surface-900 text-white flex flex-col h-full shrink-0">
+  <div class="p-5 border-b border-white/5">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center text-sm font-bold shadow-lg shadow-brand-500/25">G</div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight">GYM OS</h1>
+        <p class="text-[11px] text-gray-400 uppercase tracking-wider"><%= user.role %></p>
+      </div>
+    </div>
   </div>
 
-  <div class="flex-1 overflow-auto py-4 px-3 space-y-1">
+  <div class="flex-1 overflow-auto py-3 px-3 space-y-0.5">
     <% if (user.role === 'owner') { %>
       <%- include('partials/nav/owner_nav') %>
     <% } else if (user.role === 'reception') { %>
@@ -16,15 +21,15 @@
     <% } %>
   </div>
 
-  <div class="p-4 border-t border-gray-800 space-y-2">
+  <div class="p-4 border-t border-white/5 space-y-1.5">
     <% if (user.role === 'owner' && typeof gym !== 'undefined' && gym) { %>
-    <a href="/owner/gyms" class="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-300 transition-colors">
-      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-      <%= gym.name %>
+    <a href="/owner/gyms" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-gray-500 hover:text-gray-300 hover:bg-white/5 transition-all duration-200">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
+      <span class="truncate"><%= gym.name %></span>
     </a>
     <% } %>
-    <a href="/auth/logout" class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+    <a href="/auth/logout" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
       Logout
     </a>
   </div>

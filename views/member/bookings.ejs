@@ -1,31 +1,97 @@
-<div class="max-w-md mx-auto">
-  <h1 class="text-xl font-bold mb-6">My Bookings</h1>
+<div class="max-w-2xl space-y-6">
+  <div>
+    <h2 class="text-xl font-bold">My Bookings</h2>
+    <p class="text-sm text-gray-500 mt-0.5">Group classes and personal sessions</p>
+  </div>
 
-  <% if (sessions.length > 0) { %>
-  <div class="space-y-3">
-    <% sessions.forEach(s => { %>
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="font-medium"><%= s.trainers?.profiles?.full_name || 'Trainer' %></p>
-          <p class="text-sm text-gray-500">
-            <%= new Date(s.session_date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric' }) %>
-            at <%= s.start_time?.substring(0, 5) %>
-          </p>
-          <% if (s.notes) { %><p class="text-xs text-gray-400 mt-1"><%= s.notes %></p><% } %>
-        </div>
-        <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium
-          <%= s.status === 'scheduled' ? 'bg-blue-100 text-blue-700' : s.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' %>">
-          <%= s.status %>
-        </span>
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">Upcoming Classes</h3>
+    <% if (upcoming && upcoming.length) { %>
+      <div class="space-y-2">
+        <% upcoming.forEach(function(cls) { %>
+          <div class="flex items-center gap-3 px-4 py-3 bg-purple-50/50 rounded-xl">
+            <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
+              <span class="text-xs font-bold text-purple-600"><%= cls.start_time %></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium"><%= cls.name %></div>
+              <div class="text-xs text-gray-400"><%= cls.trainer_name %> &middot; <%= cls.date %></div>
+            </div>
+            <button hx-post="/member/bookings/<%= cls.id %>/cancel"
+                    hx-swap="outerHTML"
+                    class="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+              Cancel
+            </button>
+          </div>
+        <% }); %>
       </div>
-    </div>
-    <% }) %>
+    <% } else { %>
+      <div class="text-center py-8">
+        <div class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        <p class="text-sm text-gray-500">No upcoming bookings</p>
+      </div>
+    <% } %>
   </div>
-  <% } else { %>
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-center">
-    <p class="text-gray-400 text-lg">No sessions booked.</p>
-    <p class="text-xs text-gray-400 mt-1">Contact reception or your trainer to schedule a session.</p>
+
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">Available Classes</h3>
+    <% if (available && available.length) { %>
+      <div class="space-y-2">
+        <% available.forEach(function(cls) { %>
+          <div class="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl hover:bg-purple-50/50 transition-colors group">
+            <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 group-hover:bg-purple-100 transition-colors">
+              <span class="text-xs font-bold text-gray-500 group-hover:text-purple-600 transition-colors"><%= cls.start_time %></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium"><%= cls.name %></div>
+              <div class="text-xs text-gray-400"><%= cls.trainer_name %> &middot; <%= cls.date %> &middot; <%= cls.available %> spots left</div>
+            </div>
+            <button hx-post="/member/bookings/<%= cls.id %>/book"
+                    hx-swap="none"
+                    class="px-3 py-1.5 bg-purple-600 text-white text-xs font-medium rounded-lg hover:bg-purple-700 transition-all active:scale-95">
+              Book
+            </button>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="text-center py-8">
+        <p class="text-sm text-gray-400">No classes available right now</p>
+      </div>
+    <% } %>
   </div>
-  <% } %>
+
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold mb-4">Past Bookings</h3>
+    <% if (past && past.length) { %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-[11px] text-gray-400 uppercase tracking-wider">
+              <th class="text-left font-medium pb-3">Class</th>
+              <th class="text-left font-medium pb-3">Date</th>
+              <th class="text-left font-medium pb-3">Trainer</th>
+              <th class="text-left font-medium pb-3">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+          <% past.forEach(function(cls) { %>
+            <tr class="table-row">
+              <td class="py-2.5 font-medium"><%= cls.name %></td>
+              <td class="py-2.5 text-gray-500"><%= cls.date %></td>
+              <td class="py-2.5 text-gray-500"><%= cls.trainer_name %></td>
+              <td class="py-2.5">
+                <span class="badge-neutral"><%= cls.status %></span>
+              </td>
+            </tr>
+          <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p class="text-sm text-gray-400 text-center py-4">No past bookings</p>
+    <% } %>
+  </div>
 </div>

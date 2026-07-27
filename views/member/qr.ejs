@@ -1,18 +1,37 @@
-<div class="max-w-sm mx-auto text-center">
-  <h1 class="text-xl font-bold mb-8">QR Check-in</h1>
-
-  <div id="checkinResult" class="mb-6">
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 inline-block">
-      <%- qrSvg %>
-      <p class="text-xs text-gray-400 mt-3">Scan at the gym gate</p>
-    </div>
+<div class="max-w-md mx-auto space-y-6">
+  <div class="text-center">
+    <h2 class="text-xl font-bold">Check-in QR</h2>
+    <p class="text-sm text-gray-500 mt-1">Show this at the gym entrance</p>
   </div>
 
-  <form hx-post="/member/check-in" hx-target="#checkinResult" hx-swap="innerHTML">
-    <button type="submit" class="w-full py-4 bg-brand-600 text-white rounded-xl text-lg font-bold hover:bg-brand-700 transition">
-      Check In / Check Out
-    </button>
-  </form>
+  <div class="card p-8 flex flex-col items-center">
+    <div class="bg-white border-2 border-gray-100 rounded-2xl p-4 mb-4 shadow-sm">
+      <div id="qr-code" class="w-56 h-56 bg-gray-100 rounded-xl flex items-center justify-center">
+        <% if (qrCode) { %>
+          <img src="<%= qrCode %>" alt="Check-in QR" class="w-full h-full object-contain rounded-xl">
+        <% } else { %>
+          <div class="text-center">
+            <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+            <span class="text-sm text-gray-400">Generating QR...</span>
+          </div>
+        <% } %>
+      </div>
+    </div>
 
-  <p class="text-xs text-gray-400 mt-4">Tap the button when you arrive or leave</p>
+    <div class="text-center">
+      <p class="text-sm font-medium">Scan at gate</p>
+      <p class="text-xs text-gray-400 mt-1">Expires in 2 min &middot; Auto-refreshes</p>
+    </div>
+
+    <button onclick="location.reload()" class="btn-secondary mt-4 gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      Refresh QR
+    </button>
+  </div>
+
+  <div class="card p-4 text-center">
+    <p class="text-xs text-gray-500">
+      <span class="font-medium text-gray-700">Tip:</span> Keep this screen open at the entrance. The QR refreshes automatically every 2 minutes for security.
+    </p>
+  </div>
 </div>

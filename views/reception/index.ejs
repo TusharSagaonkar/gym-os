@@ -1,45 +1,65 @@
-<div class="max-w-2xl mx-auto">
-  <h1 class="text-xl font-bold mb-6">Search Member</h1>
+<div class="max-w-2xl mx-auto space-y-6">
+  <div>
+    <h2 class="text-xl font-bold">Member Search</h2>
+    <p class="text-sm text-gray-500 mt-0.5">Search &middot; Renew &middot; Collect</p>
+  </div>
 
-  <div class="mb-6">
+  <div class="relative">
+    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
     <input type="text" name="search" placeholder="Search by name or phone..."
       hx-get="/reception" hx-trigger="keyup changed delay:300ms" hx-target="#searchResults"
       value="<%= search %>"
-      class="w-full px-4 py-3 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+      class="w-full pl-12 pr-4 py-3.5 text-base bg-white border border-gray-200 rounded-2xl shadow-sm transition-all duration-200 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none"
       autofocus>
   </div>
 
   <div id="searchResults">
-    <% if (members.length > 0) { %>
-    <div class="space-y-2">
+    <% if (members && members.length > 0) { %>
+    <div class="space-y-2 animate-fade">
       <% members.forEach(m => { %>
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="font-medium"><%= m.full_name %></p>
-            <p class="text-sm text-gray-500"><%= m.phone || '—' %></p>
+      <div class="card p-4 flex items-center justify-between group">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-sm font-bold shrink-0">
+            <%= (m.full_name || '?').charAt(0).toUpperCase() %>
           </div>
-          <div class="flex items-center gap-3">
-            <% const ms = m.memberships?.[0]; %>
-            <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium
-              <%= ms?.status === 'active' ? 'bg-emerald-100 text-emerald-700' : ms?.status === 'expired' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' %>">
-              <%= ms?.status || 'no plan' %>
-            </span>
-            <a href="/owner/members/<%= m.id %>" class="px-3 py-1.5 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700">Renew</a>
+          <div class="min-w-0">
+            <p class="text-sm font-semibold truncate"><%= m.full_name %></p>
+            <p class="text-xs text-gray-400"><%= m.phone || '—' %></p>
           </div>
+        </div>
+        <div class="flex items-center gap-3 shrink-0">
+          <% const ms = m.memberships?.[0]; %>
+          <% if (ms?.status === 'active') { %>
+            <span class="badge-success">Active</span>
+          <% } else if (ms?.status === 'expired') { %>
+            <span class="badge-danger">Expired</span>
+          <% } else { %>
+            <span class="badge-warning"><%= ms?.status || 'no plan' %></span>
+          <% } %>
+          <a href="/owner/members/<%= m.id %>" class="px-3 py-1.5 bg-brand-600 text-white text-xs font-medium rounded-lg hover:bg-brand-700 transition-colors active:scale-95">Renew</a>
         </div>
       </div>
       <% }) %>
     </div>
-    <% } else if (search.length >= 2) { %>
-    <div class="text-center py-8">
-      <p class="text-gray-400 text-lg">No members found.</p>
-      <a href="/reception/new-admission" class="text-brand-600 hover:underline text-sm mt-2 inline-block">New Admission →</a>
+    <% } else if (search && search.length >= 2) { %>
+    <div class="card p-12 text-center animate-fade">
+      <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+      <p class="text-sm font-medium text-gray-500">No members found</p>
+      <p class="text-xs text-gray-400 mt-1">Try a different name or phone</p>
+      <a href="/reception/new-admission" class="btn-primary mt-4 text-sm gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
+        New Admission
+      </a>
     </div>
-    <% } else if (search.length === 0) { %>
-    <div class="text-center py-12">
-      <p class="text-gray-400 text-lg">Search for a member to begin.</p>
-      <p class="text-gray-400 text-sm mt-1">Enter name or phone number</p>
+    <% } else { %>
+    <div class="card p-12 text-center animate-fade">
+      <div class="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-7 h-7 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+      <p class="text-sm font-medium text-gray-500">Search for a member</p>
+      <p class="text-xs text-gray-400 mt-1">Enter their name or phone number to get started</p>
     </div>
     <% } %>
   </div>

@@ -1,48 +1,75 @@
-<div class="flex items-center justify-between mb-6">
-  <h1 class="text-xl font-bold">Attendance</h1>
-  <form hx-get="/owner/attendance" hx-target="#attendanceLog" hx-trigger="change">
-    <input type="date" name="date" value="<%= date %>"
-      class="px-3 py-2 text-sm border border-gray-300 rounded-lg">
-  </form>
-</div>
-
-<div id="attendanceLog">
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4">
-    <div class="flex gap-6">
-      <div><p class="text-sm text-gray-500">Total Visits</p><p class="text-2xl font-bold"><%= logs.length %></p></div>
-      <div><p class="text-sm text-gray-500">Inside Now</p><p class="text-2xl font-bold text-emerald-600"><%= insideCount %></p></div>
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold">Attendance</h2>
+      <p class="text-sm text-gray-500 mt-0.5">Track member check-ins</p>
     </div>
+    <form hx-get="/owner/attendance" hx-target="#attendanceLog" hx-trigger="change">
+      <input type="date" name="date" value="<%= date %>"
+        class="input min-w-[160px]">
+    </form>
   </div>
 
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-    <table class="w-full text-sm">
-      <thead class="bg-gray-50 text-gray-600">
-        <tr>
-          <th class="text-left px-4 py-3 font-medium">Member</th>
-          <th class="text-left px-4 py-3 font-medium">Check In</th>
-          <th class="text-left px-4 py-3 font-medium">Check Out</th>
-          <th class="text-left px-4 py-3 font-medium">Duration</th>
-          <th class="text-left px-4 py-3 font-medium">Status</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        <% logs.forEach(l => { %>
-        <tr class="hover:bg-gray-50">
-          <td class="px-4 py-3 font-medium"><%= l.profiles?.full_name || 'Unknown' %></td>
-          <td class="px-4 py-3 text-gray-500"><%= new Date(l.check_in).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></td>
-          <td class="px-4 py-3 text-gray-500"><%= l.check_out ? new Date(l.check_out).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '—' %></td>
-          <td class="px-4 py-3 text-gray-500"><%= l.duration_minutes ? `${Math.round(l.duration_minutes)} min` : '—' %></td>
-          <td class="px-4 py-3">
-            <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium <%= l.check_out ? 'bg-gray-100 text-gray-600' : 'bg-emerald-100 text-emerald-700' %>">
-              <%= l.check_out ? 'Left' : 'Inside' %>
-            </span>
-          </td>
-        </tr>
-        <% }) %>
-        <% if (logs.length === 0) { %>
-        <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">No attendance records for this date.</td></tr>
-        <% } %>
-      </tbody>
-    </table>
+  <div id="attendanceLog" class="space-y-6">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="stat-card">
+        <span class="stat-label">Total Visits</span>
+        <div class="stat-value mt-2"><%= logs ? logs.length : 0 %></div>
+        <div class="text-xs text-gray-400 mt-1"><%= date %></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Inside Now</span>
+        <div class="stat-value mt-2 text-emerald-600"><%= insideCount || 0 %></div>
+        <div class="text-xs text-gray-400 mt-1">currently in gym</div>
+      </div>
+    </div>
+
+    <div class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-[11px] text-gray-400 uppercase tracking-wider border-b border-gray-50">
+              <th class="text-left font-medium px-4 py-3">Member</th>
+              <th class="text-left font-medium px-4 py-3">Check In</th>
+              <th class="text-left font-medium px-4 py-3">Check Out</th>
+              <th class="text-left font-medium px-4 py-3">Duration</th>
+              <th class="text-right font-medium px-4 py-3">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <% if (logs && logs.length) { %>
+              <% logs.forEach(l => { %>
+              <tr class="table-row">
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+                      <%= (l.profiles?.full_name || '?').charAt(0).toUpperCase() %>
+                    </div>
+                    <span class="font-medium"><%= l.profiles?.full_name || 'Unknown' %></span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-gray-500"><%= new Date(l.check_in).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></td>
+                <td class="px-4 py-3 text-gray-500"><%= l.check_out ? new Date(l.check_out).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '—' %></td>
+                <td class="px-4 py-3 text-gray-500"><%= l.duration_minutes ? `${Math.round(l.duration_minutes)} min` : '—' %></td>
+                <td class="px-4 py-3 text-right">
+                  <span class="badge <%= l.check_out ? 'badge-neutral' : 'badge-success' %>">
+                    <%= l.check_out ? 'Left' : 'Inside' %>
+                  </span>
+                </td>
+              </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="5" class="px-4 py-16 text-center">
+                <div class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                  <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </div>
+                <p class="text-sm text-gray-500">No attendance records</p>
+                <p class="text-xs text-gray-400 mt-0.5">for <%= date %></p>
+              </td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

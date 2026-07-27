@@ -10,22 +10,64 @@
     tailwind.config = {
       theme: {
         extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] },
           colors: {
-            brand: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' }
-          }
-        }
-      }
+            brand: {
+              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
+              400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
+              800: '#3730a3', 900: '#312e81', 950: '#1e1b4b',
+            },
+            surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 700: '#334155', 800: '#1e293b', 900: '#0f172a', 950: '#020617' },
+          },
+          animation: {
+            'in': 'in 0.2s ease-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+            'fade': 'fade 0.2s ease-out',
+            'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
+          },
+          keyframes: {
+            in: { '0%': { opacity: '0', transform: 'translateY(4px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            slideUp: { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            fade: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            pulseSoft: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.7' } },
+          },
+        },
+      },
     }
   </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    .card { @apply bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-200 hover:shadow-md; }
+    .card-glass { @apply bg-white/80 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg; }
+    .btn { @apply inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 active:scale-95; }
+    .btn-primary { @apply btn bg-brand-600 text-white hover:bg-brand-700 shadow-sm hover:shadow-md; }
+    .btn-secondary { @apply btn bg-gray-100 text-gray-700 hover:bg-gray-200; }
+    .btn-ghost { @apply btn text-gray-600 hover:bg-gray-100; }
+    .input { @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all duration-200 focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none; }
+    .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+    .badge-success { @apply badge bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20; }
+    .badge-warning { @apply badge bg-amber-50 text-amber-700 ring-1 ring-amber-600/20; }
+    .badge-danger { @apply badge bg-red-50 text-red-700 ring-1 ring-red-600/20; }
+    .badge-info { @apply badge bg-blue-50 text-blue-700 ring-1 ring-blue-600/20; }
+    .badge-neutral { @apply badge bg-gray-100 text-gray-600 ring-1 ring-gray-500/20; }
+    .stat-card { @apply card p-5; }
+    .stat-value { @apply text-2xl font-bold tracking-tight; }
+    .stat-label { @apply text-xs font-medium text-gray-500 uppercase tracking-wider; }
+    .table-row { @apply transition-colors duration-150 hover:bg-gray-50/80; }
+    .shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    @media (max-width: 768px) { .sidebar { display: none; } .sidebar.open { display: flex; position: fixed; z-index: 50; inset: 0; } }
+  </style>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏋️</text></svg>">
 </head>
-<body class="h-full bg-gray-50 text-gray-900 antialiased">
+<body class="h-full bg-surface-50 text-surface-800 antialiased font-sans">
   <% if (user) { %>
   <div class="flex h-full">
     <%- include('partials/sidebar') %>
-    <main class="flex-1 overflow-auto">
+    <main class="flex-1 overflow-auto bg-surface-50">
       <%- include('partials/header') %>
-      <div class="p-6">
+      <div class="p-4 md:p-6 animate-in">
         <%- include(body) %>
       </div>
     </main>

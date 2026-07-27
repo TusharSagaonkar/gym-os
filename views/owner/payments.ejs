@@ -1,45 +1,66 @@
-<div class="flex items-center justify-between mb-6">
-  <h1 class="text-xl font-bold">Payments</h1>
-  <div class="flex gap-3 items-center">
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold">Payments</h2>
+      <p class="text-sm text-gray-500 mt-0.5">Track revenue and transactions</p>
+    </div>
     <select name="filter" hx-get="/owner/payments" hx-target="#paymentsList" hx-trigger="change"
-      class="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white">
+      class="input min-w-[160px]">
       <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
       <option value="week" <%= filter === 'week' ? 'selected' : '' %>>This Week</option>
       <option value="month" <%= filter === 'month' ? 'selected' : '' %>>This Month</option>
     </select>
   </div>
-</div>
 
-<div id="paymentsList">
-  <div class="bg-brand-50 border border-brand-200 rounded-xl p-4 mb-4">
-    <p class="text-sm text-brand-700">Total: <span class="text-xl font-bold">₹<%= total.toLocaleString() %></span></p>
-  </div>
+  <div id="paymentsList" class="space-y-6">
+    <div class="stat-card">
+      <span class="stat-label">Total Revenue</span>
+      <div class="stat-value mt-2">₹<%= (total || 0).toLocaleString('en-IN') %></div>
+    </div>
 
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-    <table class="w-full text-sm">
-      <thead class="bg-gray-50 text-gray-600">
-        <tr>
-          <th class="text-left px-4 py-3 font-medium">Member</th>
-          <th class="text-left px-4 py-3 font-medium">Amount</th>
-          <th class="text-left px-4 py-3 font-medium">Method</th>
-          <th class="text-left px-4 py-3 font-medium">Receipt</th>
-          <th class="text-left px-4 py-3 font-medium">Date</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        <% payments.forEach(p => { %>
-        <tr class="hover:bg-gray-50">
-          <td class="px-4 py-3 font-medium"><%= p.profiles?.full_name || 'Unknown' %></td>
-          <td class="px-4 py-3 font-medium">₹<%= Number(p.amount).toLocaleString() %></td>
-          <td class="px-4 py-3 text-gray-500 capitalize"><%= p.payment_method %></td>
-          <td class="px-4 py-3 text-xs text-gray-400"><%= p.receipt_number || '—' %></td>
-          <td class="px-4 py-3 text-gray-500"><%= new Date(p.created_at).toLocaleDateString('en-IN') %></td>
-        </tr>
-        <% }) %>
-        <% if (payments.length === 0) { %>
-        <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">No payments found.</td></tr>
-        <% } %>
-      </tbody>
-    </table>
+    <div class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-[11px] text-gray-400 uppercase tracking-wider border-b border-gray-50">
+              <th class="text-left font-medium px-4 py-3">Member</th>
+              <th class="text-left font-medium px-4 py-3">Amount</th>
+              <th class="text-left font-medium px-4 py-3 hidden sm:table-cell">Method</th>
+              <th class="text-left font-medium px-4 py-3 hidden md:table-cell">Receipt</th>
+              <th class="text-right font-medium px-4 py-3">Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-50">
+            <% if (payments && payments.length) { %>
+              <% payments.forEach(p => { %>
+              <tr class="table-row">
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+                      <%= (p.profiles?.full_name || '?').charAt(0).toUpperCase() %>
+                    </div>
+                    <span class="font-medium"><%= p.profiles?.full_name || 'Unknown' %></span>
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="font-semibold text-emerald-700">₹<%= Number(p.amount).toLocaleString('en-IN') %></span>
+                </td>
+                <td class="px-4 py-3 text-gray-500 capitalize hidden sm:table-cell"><%= p.payment_method %></td>
+                <td class="px-4 py-3 text-gray-400 text-xs hidden md:table-cell"><%= p.receipt_number || '—' %></td>
+                <td class="px-4 py-3 text-gray-500 text-right"><%= new Date(p.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+              </tr>
+              <% }) %>
+            <% } else { %>
+              <tr><td colspan="5" class="px-4 py-16 text-center">
+                <div class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                  <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <p class="text-sm text-gray-500">No payments found</p>
+              </td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

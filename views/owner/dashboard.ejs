@@ -1,71 +1,141 @@
-<div id="dashboard" hx-get="/owner" hx-trigger="every 30s" hx-swap="outerHTML">
-  <!-- Stat cards row -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-      <p class="text-sm text-gray-500">Members Inside</p>
-      <p class="text-3xl font-bold mt-1"><%= stats.membersInside %></p>
-      <div class="mt-3 bg-gray-100 rounded-full h-2">
-        <div class="bg-emerald-500 h-2 rounded-full" style="width:<%= stats.capacityPct %>%"></div>
-      </div>
-      <p class="text-xs text-gray-400 mt-1"><%= stats.capacityPct %>% capacity</p>
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold">Overview</h2>
+      <p class="text-sm text-gray-500 mt-0.5">Last 30 days</p>
     </div>
-
-    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-      <p class="text-sm text-gray-500">Trainers</p>
-      <p class="text-3xl font-bold mt-1"><%= stats.trainerCount %></p>
-      <p class="text-xs text-gray-400 mt-1">On duty</p>
-    </div>
-
-    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-      <p class="text-sm text-gray-500">Today's Collection</p>
-      <p class="text-3xl font-bold mt-1">₹<%= stats.todayTotal.toLocaleString() %></p>
-    </div>
-
-    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-      <p class="text-sm text-gray-500">This Month</p>
-      <p class="text-3xl font-bold mt-1">₹<%= stats.monthTotal.toLocaleString() %></p>
+    <div class="flex items-center gap-2 text-[11px] text-gray-400" hx-get="/owner/dashboard?partial=stats" hx-trigger="every 30s" hx-swap="none">
+      <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-soft"></div>
+      Live
     </div>
   </div>
 
-  <!-- Peak + Renewals + Alerts row -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-      <p class="text-sm text-gray-500">Peak Today</p>
-      <p class="text-2xl font-bold mt-1"><%= stats.peakDisplay %></p>
-    </div>
-
-    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-      <p class="text-sm text-gray-500">Active Members</p>
-      <p class="text-2xl font-bold mt-1"><%= stats.activeMembers %></p>
-    </div>
-
-    <div class="bg-white rounded-xl p-5 border border-amber-100 shadow-sm <%= stats.expiringMembers > 0 ? 'bg-amber-50' : '' %>">
-      <p class="text-sm text-gray-500">Expiring Soon</p>
-      <p class="text-2xl font-bold mt-1 <%= stats.expiringMembers > 0 ? 'text-amber-600' : '' %>"><%= stats.expiringMembers %></p>
-      <p class="text-xs text-gray-400 mt-1">Within 3 days</p>
-    </div>
-  </div>
-
-  <!-- Renewals + Smart Suggestion -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    <% if (stats.renewalsDue > 0) { %>
-    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-      <p class="text-sm font-medium text-gray-700 mb-2">Renewals Due This Week</p>
-      <p class="text-3xl font-bold text-brand-600"><%= stats.renewalsDue %></p>
-      <a href="/owner/members?status=active" class="text-sm text-brand-600 hover:underline mt-2 inline-block">View members →</a>
-    </div>
-    <% } %>
-
-    <% if (stats.suggestion) { %>
-    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
-      <div class="flex items-start gap-3">
-        <span class="text-xl"><%= stats.suggestion.type === 'opportunity' ? '💡' : '⚠️' %></span>
-        <div>
-          <p class="font-medium text-gray-800"><%= stats.suggestion.title %></p>
-          <p class="text-sm text-gray-500 mt-1"><%= stats.suggestion.description %></p>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="stats-grid">
+    <div class="stat-card group cursor-default">
+      <div class="flex items-center justify-between mb-2">
+        <span class="stat-label">Total Members</span>
+        <div class="w-8 h-8 rounded-xl bg-brand-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+          <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         </div>
       </div>
+      <div class="stat-value"><%= totalMembers || 0 %></div>
+      <div class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+        <span class="<%= newMembersThisMonth > 0 ? 'text-emerald-600' : 'text-gray-400' %> font-medium">+<%= newMembersThisMonth || 0 %></span> this month
+      </div>
     </div>
-    <% } %>
+
+    <div class="stat-card group cursor-default">
+      <div class="flex items-center justify-between mb-2">
+        <span class="stat-label">Revenue</span>
+        <div class="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+      </div>
+      <div class="stat-value">₹<%= (monthlyRevenue || 0).toLocaleString('en-IN') %></div>
+      <div class="text-xs text-gray-400 mt-1"><%= revenueStatus || 'This month' %></div>
+    </div>
+
+    <div class="stat-card group cursor-default">
+      <div class="flex items-center justify-between mb-2">
+        <span class="stat-label">Check-ins Today</span>
+        <div class="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+        </div>
+      </div>
+      <div class="stat-value"><%= todayCheckins || 0 %></div>
+      <div class="text-xs text-gray-400 mt-1">of <%= totalMembers || 0 %> members</div>
+    </div>
+
+    <div class="stat-card group cursor-default">
+      <div class="flex items-center justify-between mb-2">
+        <span class="stat-label">Expiring</span>
+        <div class="w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+          <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+      </div>
+      <div class="stat-value"><%= expiringCount || 0 %></div>
+      <div class="text-xs text-amber-600 font-medium mt-1">Within 7 days</div>
+    </div>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-6">
+    <div class="card p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-semibold">Recent Check-ins</h3>
+        <a href="/owner/attendance" class="text-xs text-brand-600 hover:text-brand-700 font-medium transition-colors">View all →</a>
+      </div>
+      <% if (recentCheckins && recentCheckins.length) { %>
+        <div class="space-y-1">
+        <% recentCheckins.forEach(function(item) { %>
+          <div class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
+              <%= (item.full_name || '?').charAt(0).toUpperCase() %>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium truncate"><%= item.full_name %></div>
+              <div class="text-[11px] text-gray-400"><%= item.phone %></div>
+            </div>
+            <span class="text-[11px] text-gray-400"><%= item.time_ago %></span>
+          </div>
+        <% }); %>
+        </div>
+      <% } else { %>
+        <div class="text-center py-8 text-sm text-gray-400">No check-ins today</div>
+      <% } %>
+    </div>
+
+    <div class="card p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-semibold">Expiring Membership</h3>
+        <a href="/owner/members" class="text-xs text-brand-600 hover:text-brand-700 font-medium transition-colors">View all →</a>
+      </div>
+      <% if (expiring && expiring.length) { %>
+        <div class="space-y-1">
+        <% expiring.forEach(function(m) { %>
+          <div class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+              <%= (m.full_name || '?').charAt(0).toUpperCase() %>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium truncate"><%= m.full_name %></div>
+              <div class="text-[11px] text-gray-400"><%= m.plan_name %></div>
+            </div>
+            <span class="badge-warning"><%= m.days_left %>d left</span>
+          </div>
+        <% }); %>
+        </div>
+      <% } else { %>
+        <div class="text-center py-8 text-sm text-gray-400">No expiring memberships</div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <a href="/owner/classes" class="card p-5 hover:border-brand-200 hover:shadow-md transition-all group">
+      <div class="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      </div>
+      <h3 class="text-sm font-semibold">Classes Today</h3>
+      <p class="text-2xl font-bold mt-1"><%= classesToday || 0 %></p>
+      <span class="text-xs text-gray-400">Scheduled sessions</span>
+    </a>
+
+    <a href="/owner/payments" class="card p-5 hover:border-emerald-200 hover:shadow-md transition-all group">
+      <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <h3 class="text-sm font-semibold">Payments</h3>
+      <p class="text-2xl font-bold mt-1">₹<%= (monthlyRevenue || 0).toLocaleString('en-IN') %></p>
+      <span class="text-xs text-gray-400">This month's collection</span>
+    </a>
+
+    <a href="/analytics/churn" class="card p-5 hover:border-red-200 hover:shadow-md transition-all group">
+      <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
+      </div>
+      <h3 class="text-sm font-semibold">At Risk</h3>
+      <p class="text-2xl font-bold mt-1"><%= atRiskCount || 0 %></p>
+      <span class="text-xs text-red-600 font-medium">Members at churn risk</span>
+    </a>
   </div>
 </div>

@@ -1,56 +1,58 @@
 <div class="min-h-screen flex">
-  <div class="flex-1 flex items-center justify-center p-8">
-    <div class="w-full max-w-md">
-      <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Join GYM OS</h1>
-        <p class="text-gray-500 mt-1">Create your member account</p>
+  <div class="flex-1 flex items-center justify-center p-6">
+    <div class="w-full max-w-sm animate-slide-up">
+      <div class="mb-8">
+        <div class="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center text-white font-bold text-lg mb-4 shadow-lg shadow-brand-500/25">G</div>
+        <h1 class="text-2xl font-bold tracking-tight">Create account</h1>
+        <p class="text-gray-500 text-sm mt-1">Join your gym in seconds</p>
       </div>
 
       <% if (error) { %>
-        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm"><%= error %></div>
+        <div class="bg-red-50 border border-red-100 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm animate-fade"><%= error %></div>
       <% } %>
 
-      <form method="POST" action="/auth/signup" class="space-y-5">
+      <form method="POST" action="/auth/signup" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
           <input type="text" name="full_name" required
-            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition" placeholder="Rahul Sharma">
+            class="input" placeholder="Rahul Sharma">
         </div>
-
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Phone</label>
           <input type="tel" name="phone" required
-            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition" placeholder="+91 9876543210">
+            class="input" placeholder="+91 9876543210">
         </div>
-
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
           <input type="email" name="email" required
-            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition" placeholder="you@example.com">
+            class="input" placeholder="you@example.com">
         </div>
-
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
           <input type="password" name="password" required minlength="6"
-            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition" placeholder="At least 6 characters">
+            class="input" placeholder="At least 6 characters">
         </div>
 
-        <button type="submit" class="w-full bg-brand-600 text-white py-2.5 rounded-lg font-medium hover:bg-brand-700 transition">
+        <button type="submit" class="btn-primary w-full py-3 text-base">
           Create Account
         </button>
       </form>
 
       <p class="text-center text-sm text-gray-500 mt-6">
-        Already have an account?
-        <a href="/auth/login" class="text-brand-600 hover:underline font-medium">Sign in</a>
+        Already a member?
+        <a href="/auth/login" class="text-brand-600 font-medium hover:text-brand-700 transition-colors">Sign in →</a>
       </p>
     </div>
   </div>
 
-  <div class="hidden lg:flex flex-1 bg-gradient-to-br from-brand-600 to-brand-800 items-center justify-center p-12">
-    <div class="text-white max-w-md">
-      <h2 class="text-4xl font-bold mb-4">Get started in minutes.</h2>
-      <p class="text-lg text-brand-100 leading-relaxed">Join today. Scan QR at the gate. Work out. That's it.</p>
+  <div class="hidden lg:flex flex-1 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-brand-600 via-brand-700 to-brand-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.1)_0%,transparent_60%)]"></div>
+    <div class="relative flex items-center justify-center p-12 w-full">
+      <div class="text-white max-w-md">
+        <h2 class="text-4xl font-bold mb-4 tracking-tight">Get started<br>in minutes.</h2>
+        <p class="text-lg text-brand-200/80 leading-relaxed">Join today. Scan QR at the gate. Work out. That's it.</p>
+      </div>
     </div>
   </div>
 </div>
