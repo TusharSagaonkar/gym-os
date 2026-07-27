@@ -1,0 +1,140 @@
+<div class="max-w-4xl">
+  <a href="/owner/members" class="text-brand-600 hover:underline text-sm mb-4 inline-block">← Back to Members</a>
+
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-bold"><%= member.full_name %></h1>
+        <p class="text-gray-500 text-sm"><%= member.phone || 'No phone' %> · <%= member.email %></p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="document.getElementById('freezeModal').classList.remove('hidden')"
+          class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">Freeze</button>
+        <button onclick="document.getElementById('transferModal').classList.remove('hidden')"
+          class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">Transfer</button>
+        <button onclick="document.getElementById('renewModal').classList.remove('hidden')"
+          class="px-3 py-1.5 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700">Renew</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Membership -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+    <h2 class="font-semibold mb-3">Membership</h2>
+    <% const active = memberships.find(m => m.status === 'active') %>
+    <% if (active) { %>
+    <div class="grid grid-cols-3 gap-4">
+      <div><p class="text-sm text-gray-500">Status</p><p class="font-medium capitalize"><%= active.status %></p></div>
+      <div><p class="text-sm text-gray-500">Started</p><p class="font-medium"><%= new Date(active.start_date).toLocaleDateString('en-IN') %></p></div>
+      <div><p class="text-sm text-gray-500">Expires</p><p class="font-medium"><%= new Date(active.end_date).toLocaleDateString('en-IN') %></p></div>
+    </div>
+    <% } else { %>
+    <p class="text-gray-400">No active membership.</p>
+    <% } %>
+
+    <% if (trainer) { %>
+    <div class="mt-4 pt-4 border-t border-gray-100">
+      <p class="text-sm text-gray-500">Assigned Trainer</p>
+      <p class="font-medium"><%= trainer.profiles?.full_name || 'Assigned' %></p>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Recent Payments -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+    <h2 class="font-semibold mb-3">Recent Payments</h2>
+    <table class="w-full text-sm">
+      <thead class="text-gray-600"><tr><th class="text-left py-2">Date</th><th class="text-left py-2">Amount</th><th class="text-left py-2">Receipt</th></tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        <% payments.forEach(p => { %>
+        <tr>
+          <td class="py-2 text-gray-500"><%= new Date(p.created_at).toLocaleDateString('en-IN') %></td>
+          <td class="py-2 font-medium">₹<%= Number(p.amount).toLocaleString() %></td>
+          <td class="py-2 text-gray-400 text-xs"><%= p.receipt_number || '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Attendance -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-semibold mb-3">Attendance</h2>
+    <p class="text-sm text-gray-500 mb-2"><%= attendance.length %> visits shown</p>
+    <div class="flex flex-wrap gap-1">
+      <% attendance.forEach(a => { %>
+      <div class="px-2 py-1 text-xs rounded <%= a.check_out ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700' %>"
+        title="<%= new Date(a.check_in).toLocaleString('en-IN') %>">
+        <%= new Date(a.check_in).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) %>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<!-- Renew Modal -->
+<div id="renewModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+    <h3 class="font-semibold text-lg mb-4">Renew Membership</h3>
+    <form method="POST" action="/owner/members/<%= member.id %>/renew">
+      <input type="hidden" name="duration" value="1">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Amount (₹)</label>
+          <input type="number" name="amount" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+          <select name="payment_method" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white">
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="upi">UPI</option>
+            <option value="bank_transfer">Bank Transfer</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-6">
+        <button type="button" onclick="document.getElementById('renewModal').classList.add('hidden')"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700">Collect & Renew</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Freeze Modal -->
+<div id="freezeModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+    <h3 class="font-semibold text-lg mb-4">Freeze Membership</h3>
+    <form method="POST" action="/owner/members/<%= member.id %>/freeze">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Freeze Until</label>
+        <input type="date" name="until" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+      </div>
+      <div class="flex gap-2 mt-6">
+        <button type="button" onclick="document.getElementById('freezeModal').classList.add('hidden')"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700">Freeze</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Transfer Modal -->
+<div id="transferModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+    <h3 class="font-semibold text-lg mb-4">Transfer Membership</h3>
+    <form method="POST" action="/owner/members/<%= member.id %>/transfer">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Transfer To</label>
+        <input type="text" name="to_member_id" required placeholder="Member ID"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+      </div>
+      <div class="flex gap-2 mt-6">
+        <button type="button" onclick="document.getElementById('transferModal').classList.add('hidden')"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Transfer</button>
+      </div>
+    </form>
+  </div>
+</div>

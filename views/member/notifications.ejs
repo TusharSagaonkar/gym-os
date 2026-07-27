@@ -1,0 +1,30 @@
+<div class="max-w-md mx-auto">
+  <h1 class="text-xl font-bold mb-6">Notifications</h1>
+
+  <% if (notifications.length > 0) { %>
+  <div class="space-y-2">
+    <% notifications.forEach(n => { %>
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 <%= !n.is_read ? 'border-l-4 border-l-brand-500' : '' %>"
+      hx-post="/member/notifications/<%= n.id %>/read" hx-trigger="click" hx-swap="none">
+      <div class="flex items-start gap-3">
+        <span class="text-sm">
+          <%= n.type === 'membership' ? '🔔' : n.type === 'payment' ? '💰' : n.type === 'appointment' ? '📅' : '📢' %>
+        </span>
+        <div class="flex-1">
+          <p class="text-sm font-medium <%= !n.is_read ? 'text-gray-900' : 'text-gray-500' %>"><%= n.title %></p>
+          <p class="text-xs text-gray-400 mt-0.5"><%= n.message %></p>
+          <p class="text-xs text-gray-300 mt-1"><%= new Date(n.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
+        </div>
+        <% if (!n.is_read) { %>
+        <div class="w-2 h-2 rounded-full bg-brand-500 mt-1.5 shrink-0"></div>
+        <% } %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } else { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-center">
+    <p class="text-gray-400 text-lg">No notifications.</p>
+  </div>
+  <% } %>
+</div>

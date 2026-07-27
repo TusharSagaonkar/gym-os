@@ -1,0 +1,18 @@
+<div class="max-w-sm mx-auto text-center">
+  <h1 class="text-xl font-bold mb-8">QR Check-in</h1>
+
+  <div id="checkinResult" class="mb-6">
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 inline-block">
+      <%- qrSvg %>
+      <p class="text-xs text-gray-400 mt-3">Scan at the gym gate</p>
+    </div>
+  </div>
+
+  <form hx-post="/member/check-in" hx-target="#checkinResult" hx-swap="innerHTML">
+    <button type="submit" class="w-full py-4 bg-brand-600 text-white rounded-xl text-lg font-bold hover:bg-brand-700 transition">
+      Check In / Check Out
+    </button>
+  </form>
+
+  <p class="text-xs text-gray-400 mt-4">Tap the button when you arrive or leave</p>
+</div>

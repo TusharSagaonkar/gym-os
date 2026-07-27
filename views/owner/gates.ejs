@@ -1,0 +1,94 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-bold">Smart Gates</h1>
+  <button onclick="document.getElementById('gateModal').classList.remove('hidden')"
+    class="px-4 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700">Add Gate Device</button>
+</div>
+
+<!-- Gate Devices -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+  <% devices.forEach(d => { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 <%= !d.is_active ? 'opacity-60' : '' %>">
+    <div class="flex items-start justify-between mb-3">
+      <div>
+        <h3 class="font-semibold"><%= d.name %></h3>
+        <p class="text-xs text-gray-400 capitalize"><%= d.device_type %> · <%= d.location || 'Unnamed' %></p>
+      </div>
+      <span class="inline-flex px-2 py-0.5 text-xs rounded-full <%= d.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' %>">
+        <%= d.is_active ? 'Active' : 'Offline' %>
+      </span>
+    </div>
+    <p class="text-xs text-gray-400">Last ping: <%= d.last_ping ? new Date(d.last_ping).toLocaleString('en-IN') : 'Never' %></p>
+    <details class="mt-3">
+      <summary class="text-xs text-gray-400 cursor-pointer hover:text-gray-600">API Key</summary>
+      <code class="text-xs text-gray-500 break-all"><%= d.api_key %></code>
+    </details>
+    <p class="text-xs text-gray-300 mt-1">POST /integrations/gate/event</p>
+    <div class="mt-2 bg-gray-50 rounded-lg p-2 text-xs text-gray-500 font-mono">
+      { api_key, member_id, event_type: "entry"|"exit" }
+    </div>
+  </div>
+  <% }) %>
+</div>
+
+<% if (devices.length === 0) { %>
+<div class="text-center py-12 mb-8">
+  <p class="text-gray-400 text-lg">No gate devices registered.</p>
+</div>
+<% } %>
+
+<!-- Recent Events -->
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+  <h2 class="font-semibold mb-4">Recent Gate Events</h2>
+  <% if (events.length > 0) { %>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="text-gray-600"><tr>
+        <th class="text-left py-2">Member</th>
+        <th class="text-left py-2">Device</th>
+        <th class="text-left py-2">Event</th>
+        <th class="text-left py-2">Access</th>
+        <th class="text-left py-2">Time</th>
+      </tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        <% events.forEach(e => { %>
+        <tr>
+          <td class="py-2 font-medium"><%= e.profiles?.full_name || 'Unknown' %></td>
+          <td class="py-2 text-gray-500"><%= e.gate_devices?.name || '—' %></td>
+          <td class="py-2"><span class="inline-flex px-2 py-0.5 text-xs rounded-full <%= e.event_type === 'entry' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700' %>"><%= e.event_type %></span></td>
+          <td class="py-2"><%= e.access_granted ? '✓' : '✕ ' + (e.access_denied_reason || 'Denied') %></td>
+          <td class="py-2 text-gray-500"><%= new Date(e.created_at).toLocaleString('en-IN') %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } else { %>
+  <p class="text-gray-400 text-sm">No gate events recorded yet.</p>
+  <% } %>
+</div>
+
+<!-- Add Gate Modal -->
+<div id="gateModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+    <h3 class="font-semibold text-lg mb-4">Register Gate Device</h3>
+    <form method="POST" action="/integrations/gates/device">
+      <div class="space-y-4">
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <input type="text" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Main Entrance Gate"></div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <select name="device_type" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white">
+            <option value="gate">Gate</option>
+            <option value="turnstile">Turnstile</option>
+            <option value="door">Door</option>
+            <option value="other">Other</option>
+          </select></div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+          <input type="text" name="location" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Front entrance"></div>
+      </div>
+      <div class="flex gap-2 mt-6">
+        <button type="button" onclick="document.getElementById('gateModal').classList.add('hidden')" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700">Register</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<div class="max-w-md mx-auto">
+  <h1 class="text-xl font-bold mb-6">My Membership</h1>
+
+  <% if (active) { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6">
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-sm text-gray-500">Current Plan</p>
+      <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium bg-emerald-100 text-emerald-700">Active</span>
+    </div>
+    <p class="text-2xl font-bold"><%= active.membership_plans?.name || 'Standard' %></p>
+    <div class="mt-4 grid grid-cols-2 gap-4">
+      <div>
+        <p class="text-xs text-gray-500">Started</p>
+        <p class="font-medium"><%= new Date(active.start_date).toLocaleDateString('en-IN') %></p>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500">Expires</p>
+        <p class="font-medium <%= daysLeft <= 7 ? 'text-red-600' : '' %>"><%= new Date(active.end_date).toLocaleDateString('en-IN') %></p>
+        <p class="text-xs text-gray-400"><%= daysLeft %> days left</p>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-center mb-6">
+    <p class="text-gray-400 text-lg">No active membership.</p>
+    <a href="/member/bookings" class="text-brand-600 hover:underline text-sm mt-2 inline-block">Renew now →</a>
+  </div>
+  <% } %>
+
+  <!-- Payment History -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6">
+    <h2 class="font-semibold mb-3">Payment History</h2>
+    <% if (payments.length > 0) { %>
+    <div class="space-y-2">
+      <% payments.forEach(p => { %>
+      <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
+        <div>
+          <p class="text-sm text-gray-500"><%= new Date(p.created_at).toLocaleDateString('en-IN') %></p>
+          <p class="text-xs text-gray-400 capitalize"><%= p.payment_type.replace('_', ' ') %></p>
+        </div>
+        <p class="font-medium">₹<%= Number(p.amount).toLocaleString() %></p>
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="text-gray-400 text-sm">No payments recorded.</p>
+    <% } %>
+  </div>
+
+  <!-- Past Memberships -->
+  <% const past = memberships?.filter(m => m.status !== 'active').slice(0, 5); %>
+  <% if (past && past.length > 0) { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+    <h2 class="font-semibold mb-3">Past Memberships</h2>
+    <div class="space-y-2">
+      <% past.forEach(m => { %>
+      <div class="flex justify-between py-2 border-b border-gray-50 last:border-0">
+        <div>
+          <p class="text-sm"><%= m.membership_plans?.name || 'Plan' %></p>
+          <p class="text-xs text-gray-400"><%= new Date(m.start_date).toLocaleDateString('en-IN') %> — <%= new Date(m.end_date).toLocaleDateString('en-IN') %></p>
+        </div>
+        <span class="inline-flex px-2 py-0.5 text-xs rounded-full <%= m.status === 'expired' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600' %>"><%= m.status %></span>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+  <% } %>
+</div>

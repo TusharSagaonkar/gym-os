@@ -1,0 +1,31 @@
+<div class="max-w-md mx-auto">
+  <h1 class="text-xl font-bold mb-6">My Bookings</h1>
+
+  <% if (sessions.length > 0) { %>
+  <div class="space-y-3">
+    <% sessions.forEach(s => { %>
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="font-medium"><%= s.trainers?.profiles?.full_name || 'Trainer' %></p>
+          <p class="text-sm text-gray-500">
+            <%= new Date(s.session_date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric' }) %>
+            at <%= s.start_time?.substring(0, 5) %>
+          </p>
+          <% if (s.notes) { %><p class="text-xs text-gray-400 mt-1"><%= s.notes %></p><% } %>
+        </div>
+        <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium
+          <%= s.status === 'scheduled' ? 'bg-blue-100 text-blue-700' : s.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' %>">
+          <%= s.status %>
+        </span>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } else { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-center">
+    <p class="text-gray-400 text-lg">No sessions booked.</p>
+    <p class="text-xs text-gray-400 mt-1">Contact reception or your trainer to schedule a session.</p>
+  </div>
+  <% } %>
+</div>

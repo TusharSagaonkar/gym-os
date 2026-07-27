@@ -1,0 +1,52 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-bold">Smart Recommendations</h1>
+  <span class="text-sm text-gray-500"><%= totalRecs %> suggestions found</span>
+</div>
+
+<!-- Summary -->
+<div class="bg-brand-50 border border-brand-200 rounded-xl p-4 mb-6">
+  <p class="text-sm text-brand-700">These recommendations are based on member attendance patterns over the last 30 days. Suggesting plan changes can improve member retention and revenue.</p>
+</div>
+
+<% if (recs.length > 0) { %>
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-600">
+      <tr>
+        <th class="text-left px-4 py-3 font-medium">Member</th>
+        <th class="text-left px-4 py-3 font-medium">Current Plan</th>
+        <th class="text-left px-4 py-3 font-medium">Suggested Plan</th>
+        <th class="text-left px-4 py-3 font-medium">Annual Savings</th>
+        <th class="text-left px-4 py-3 font-medium">Reason</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% recs.forEach(r => { %>
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3 font-medium"><%= r.memberName %></td>
+        <td class="px-4 py-3 text-gray-500"><%= r.currentPlan %></td>
+        <td class="px-4 py-3">
+          <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-brand-100 text-brand-700 font-medium">
+            <%= r.suggestedPlan %>
+          </span>
+        </td>
+        <td class="px-4 py-3 text-emerald-600 font-medium">₹<%= r.savings.toLocaleString() %></td>
+        <td class="px-4 py-3 text-xs text-gray-500 max-w-xs"><%= r.reason %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<% if (recs.length > 0) { %>
+<div class="mt-4 text-sm text-gray-500">
+  Total potential member savings: <strong class="text-emerald-600">₹<%= recs.reduce((s, r) => s + r.savings, 0).toLocaleString() %></strong>
+</div>
+<% } %>
+
+<% } else { %>
+<div class="text-center py-12">
+  <p class="text-gray-400 text-lg">No recommendations right now.</p>
+  <p class="text-sm text-gray-400 mt-1">More attendance data is needed to generate useful suggestions.</p>
+</div>
+<% } %>

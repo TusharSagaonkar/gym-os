@@ -1,0 +1,36 @@
+<div>
+  <a href="/owner/classes" class="text-brand-600 hover:underline text-sm mb-4 inline-block">← Back to Classes</a>
+  <h1 class="text-xl font-bold mb-6">Class Bookings</h1>
+
+  <% if (bookings.length > 0) { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-600">
+        <tr>
+          <th class="text-left px-4 py-3 font-medium">Member</th>
+          <th class="text-left px-4 py-3 font-medium">Phone</th>
+          <th class="text-left px-4 py-3 font-medium">Booked At</th>
+          <th class="text-left px-4 py-3 font-medium">Status</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% bookings.forEach(b => { %>
+        <tr>
+          <td class="px-4 py-3 font-medium"><%= b.profiles?.full_name %></td>
+          <td class="px-4 py-3 text-gray-500"><%= b.profiles?.phone || '—' %></td>
+          <td class="px-4 py-3 text-gray-500"><%= new Date(b.booked_at).toLocaleString('en-IN') %></td>
+          <td class="px-4 py-3">
+            <span class="inline-flex px-2 py-0.5 text-xs rounded-full <%= b.status === 'booked' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' %>"><%= b.status %></span>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-sm text-gray-500 mt-4"><%= bookings.length %> member(s) booked</p>
+  <% } else { %>
+  <div class="text-center py-12">
+    <p class="text-gray-400 text-lg">No bookings yet.</p>
+  </div>
+  <% } %>
+</div>

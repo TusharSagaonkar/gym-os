@@ -1,0 +1,55 @@
+<h1 class="text-xl font-bold mb-6">Trainer Dashboard</h1>
+
+<div class="grid grid-cols-3 gap-4 mb-6">
+  <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+    <p class="text-sm text-gray-500">My Members</p>
+    <p class="text-3xl font-bold mt-1"><%= memberCount %></p>
+  </div>
+  <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+    <p class="text-sm text-gray-500">Today's Sessions</p>
+    <p class="text-3xl font-bold mt-1"><%= upcomingSessions ? upcomingSessions.length : 0 %></p>
+  </div>
+  <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+    <p class="text-sm text-gray-500">Capacity</p>
+    <p class="text-3xl font-bold mt-1"><%= memberCount %>/<%= trainerRec?.max_members || 15 %></p>
+  </div>
+</div>
+
+<!-- Today's Sessions -->
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+  <h2 class="font-semibold mb-4">Today's Sessions</h2>
+  <% if (upcomingSessions && upcomingSessions.length > 0) { %>
+  <div class="space-y-3">
+    <% upcomingSessions.forEach(s => { %>
+    <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+      <div>
+        <p class="font-medium"><%= s.profiles?.full_name %></p>
+        <p class="text-sm text-gray-500"><%= s.start_time?.substring(0, 5) %> - <%= s.end_time ? s.end_time.substring(0, 5) : 'TBD' %></p>
+      </div>
+      <% if (s.notes) { %><p class="text-xs text-gray-400"><%= s.notes %></p><% } %>
+    </div>
+    <% }) %>
+  </div>
+  <% } else { %>
+  <p class="text-gray-400 text-sm">No sessions scheduled for today.</p>
+  <% } %>
+</div>
+
+<!-- My Members -->
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+  <h2 class="font-semibold mb-4">My Members</h2>
+  <% if (myMembers && myMembers.length > 0) { %>
+  <div class="grid grid-cols-2 gap-3">
+    <% myMembers.forEach(a => { %>
+    <a href="/trainer/members/<%= a.member_id %>" class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition">
+      <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 text-sm font-bold">
+        <%= a.profiles?.full_name?.charAt(0).toUpperCase() || 'M' %>
+      </div>
+      <span class="text-sm font-medium"><%= a.profiles?.full_name %></span>
+    </a>
+    <% }) %>
+  </div>
+  <% } else { %>
+  <p class="text-gray-400 text-sm">No members assigned yet.</p>
+  <% } %>
+</div>

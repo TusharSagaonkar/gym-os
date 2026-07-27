@@ -1,0 +1,26 @@
+<h1 class="text-xl font-bold mb-6">My Members</h1>
+
+<% if (members.length > 0) { %>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <% members.forEach(a => { const m = a.profiles; const ms = a.memberships?.[0]; %>
+  <a href="/trainer/members/<%= m.id %>" class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:border-brand-300 transition block">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold">
+        <%= m.full_name?.charAt(0).toUpperCase() || 'M' %>
+      </div>
+      <div>
+        <p class="font-medium"><%= m.full_name %></p>
+        <p class="text-xs text-gray-500"><%= m.phone || '' %></p>
+      </div>
+      <% if (ms) { %>
+      <span class="ml-auto inline-flex px-2 py-0.5 text-xs rounded-full <%= ms.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' %>"><%= ms.status %></span>
+      <% } %>
+    </div>
+  </a>
+  <% }) %>
+</div>
+<% } else { %>
+<div class="text-center py-12">
+  <p class="text-gray-400 text-lg">No members assigned.</p>
+</div>
+<% } %>

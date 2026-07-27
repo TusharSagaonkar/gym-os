@@ -1,0 +1,45 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-bold">Payments</h1>
+  <div class="flex gap-3 items-center">
+    <select name="filter" hx-get="/owner/payments" hx-target="#paymentsList" hx-trigger="change"
+      class="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white">
+      <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
+      <option value="week" <%= filter === 'week' ? 'selected' : '' %>>This Week</option>
+      <option value="month" <%= filter === 'month' ? 'selected' : '' %>>This Month</option>
+    </select>
+  </div>
+</div>
+
+<div id="paymentsList">
+  <div class="bg-brand-50 border border-brand-200 rounded-xl p-4 mb-4">
+    <p class="text-sm text-brand-700">Total: <span class="text-xl font-bold">₹<%= total.toLocaleString() %></span></p>
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-600">
+        <tr>
+          <th class="text-left px-4 py-3 font-medium">Member</th>
+          <th class="text-left px-4 py-3 font-medium">Amount</th>
+          <th class="text-left px-4 py-3 font-medium">Method</th>
+          <th class="text-left px-4 py-3 font-medium">Receipt</th>
+          <th class="text-left px-4 py-3 font-medium">Date</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% payments.forEach(p => { %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 font-medium"><%= p.profiles?.full_name || 'Unknown' %></td>
+          <td class="px-4 py-3 font-medium">₹<%= Number(p.amount).toLocaleString() %></td>
+          <td class="px-4 py-3 text-gray-500 capitalize"><%= p.payment_method %></td>
+          <td class="px-4 py-3 text-xs text-gray-400"><%= p.receipt_number || '—' %></td>
+          <td class="px-4 py-3 text-gray-500"><%= new Date(p.created_at).toLocaleDateString('en-IN') %></td>
+        </tr>
+        <% }) %>
+        <% if (payments.length === 0) { %>
+        <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">No payments found.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-xl font-bold mb-6">Search Member</h1>
+
+  <div class="mb-6">
+    <input type="text" name="search" placeholder="Search by name or phone..."
+      hx-get="/reception" hx-trigger="keyup changed delay:300ms" hx-target="#searchResults"
+      value="<%= search %>"
+      class="w-full px-4 py-3 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+      autofocus>
+  </div>
+
+  <div id="searchResults">
+    <% if (members.length > 0) { %>
+    <div class="space-y-2">
+      <% members.forEach(m => { %>
+      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-medium"><%= m.full_name %></p>
+            <p class="text-sm text-gray-500"><%= m.phone || '—' %></p>
+          </div>
+          <div class="flex items-center gap-3">
+            <% const ms = m.memberships?.[0]; %>
+            <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium
+              <%= ms?.status === 'active' ? 'bg-emerald-100 text-emerald-700' : ms?.status === 'expired' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' %>">
+              <%= ms?.status || 'no plan' %>
+            </span>
+            <a href="/owner/members/<%= m.id %>" class="px-3 py-1.5 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700">Renew</a>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% } else if (search.length >= 2) { %>
+    <div class="text-center py-8">
+      <p class="text-gray-400 text-lg">No members found.</p>
+      <a href="/reception/new-admission" class="text-brand-600 hover:underline text-sm mt-2 inline-block">New Admission →</a>
+    </div>
+    <% } else if (search.length === 0) { %>
+    <div class="text-center py-12">
+      <p class="text-gray-400 text-lg">Search for a member to begin.</p>
+      <p class="text-gray-400 text-sm mt-1">Enter name or phone number</p>
+    </div>
+    <% } %>
+  </div>
+</div>

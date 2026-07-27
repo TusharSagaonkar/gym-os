@@ -1,0 +1,106 @@
+<div class="max-w-md mx-auto">
+  <h1 class="text-xl font-bold mb-6">My Progress</h1>
+
+  <!-- Latest Stats -->
+  <% if (latest) { %>
+  <div class="grid grid-cols-3 gap-3 mb-6">
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm text-center">
+      <p class="text-xs text-gray-500">Weight</p>
+      <p class="text-xl font-bold mt-1"><%= latest.weight_kg || '—' %></p>
+      <p class="text-xs text-gray-400">kg</p>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm text-center">
+      <p class="text-xs text-gray-500">Body Fat</p>
+      <p class="text-xl font-bold mt-1"><%= latest.body_fat_pct || '—' %></p>
+      <p class="text-xs text-gray-400">%</p>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm text-center">
+      <p class="text-xs text-gray-500">Waist</p>
+      <p class="text-xl font-bold mt-1"><%= latest.waist_cm || '—' %></p>
+      <p class="text-xs text-gray-400">cm</p>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6 text-center">
+    <p class="text-gray-400">No measurements recorded yet.</p>
+    <p class="text-xs text-gray-400 mt-1">Your trainer will update your progress.</p>
+  </div>
+  <% } %>
+
+  <!-- Wearable Data -->
+  <% if (latestWearable) { %>
+  <h2 class="font-semibold text-sm text-gray-500 mb-3">Wearable Data <%= latestWearable.source !== 'manual' ? '(' + latestWearable.source + ')' : '' %></h2>
+  <div class="grid grid-cols-2 gap-3 mb-6">
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+      <p class="text-xs text-gray-500">Steps</p>
+      <p class="text-xl font-bold mt-1"><%= latestWearable.steps ? latestWearable.steps.toLocaleString() : '—' %></p>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+      <p class="text-xs text-gray-500">Calories</p>
+      <p class="text-xl font-bold mt-1"><%= latestWearable.calories_burned || '—' %></p>
+      <p class="text-xs text-gray-400">kcal</p>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+      <p class="text-xs text-gray-500">Heart Rate</p>
+      <p class="text-xl font-bold mt-1"><%= latestWearable.heart_rate_avg ? latestWearable.heart_rate_avg + ' bpm' : '—' %></p>
+      <% if (latestWearable.heart_rate_max) { %><p class="text-xs text-gray-400">Max: <%= latestWearable.heart_rate_max %> bpm</p><% } %>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+      <p class="text-xs text-gray-500">Active Minutes</p>
+      <p class="text-xl font-bold mt-1"><%= latestWearable.active_minutes || '—' %></p>
+      <p class="text-xs text-gray-400">min</p>
+    </div>
+  </div>
+
+  <% if (wearable.length > 1) { %>
+  <h2 class="font-semibold text-sm text-gray-500 mb-3">Last 7 Days</h2>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+    <table class="w-full text-xs">
+      <thead class="bg-gray-50 text-gray-600"><tr>
+        <th class="text-left px-3 py-2">Date</th>
+        <th class="text-left px-3 py-2">Steps</th>
+        <th class="text-left px-3 py-2">HR avg</th>
+        <th class="text-left px-3 py-2">Cal</th>
+      </tr></thead>
+      <tbody class="divide-y divide-gray-100">
+        <% wearable.forEach(w => { %>
+        <tr>
+          <td class="px-3 py-2 text-gray-500"><%= new Date(w.recorded_date).toLocaleDateString('en-IN', { weekday:'short', day:'numeric' }) %></td>
+          <td class="px-3 py-2"><%= w.steps ? w.steps.toLocaleString() : '—' %></td>
+          <td class="px-3 py-2"><%= w.heart_rate_avg || '—' %></td>
+          <td class="px-3 py-2"><%= w.calories_burned || '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+  <% } %>
+
+  <!-- History -->
+  <% if (progress.length > 0) { %>
+  <h2 class="font-semibold text-sm text-gray-500 mb-3">Body Measurements</h2>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-600">
+        <tr>
+          <th class="text-left px-4 py-2 font-medium">Date</th>
+          <th class="text-left px-4 py-2 font-medium">Weight</th>
+          <th class="text-left px-4 py-2 font-medium">Fat %</th>
+          <th class="text-left px-4 py-2 font-medium">Waist</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% progress.forEach(p => { %>
+        <tr <% if (p === latest) { %>class="bg-brand-50"<% } %>>
+          <td class="px-4 py-2 text-gray-500"><%= new Date(p.recorded_at).toLocaleDateString('en-IN') %></td>
+          <td class="px-4 py-2"><%= p.weight_kg ? p.weight_kg + ' kg' : '—' %></td>
+          <td class="px-4 py-2"><%= p.body_fat_pct ? p.body_fat_pct + '%' : '—' %></td>
+          <td class="px-4 py-2"><%= p.waist_cm ? p.waist_cm + ' cm' : '—' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</div>

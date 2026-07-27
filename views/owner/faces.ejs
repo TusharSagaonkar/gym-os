@@ -1,0 +1,53 @@
+<h1 class="text-xl font-bold mb-6">Face Recognition</h1>
+
+<p class="text-sm text-gray-500 mb-6">Register member faces for touchless check-in. Members can scan their face at the gate instead of using QR codes.</p>
+
+<!-- Enrolled Members -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+  <% members.forEach(m => { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden shrink-0">
+        <% if (m.photo_url) { %>
+        <img src="<%= m.photo_url %>" class="w-full h-full object-cover" onerror="this.style.display='none'">
+        <% } %>
+        <div class="w-full h-full flex items-center justify-center text-gray-400 text-lg"><%= m.profiles?.full_name?.charAt(0).toUpperCase() || '?' %></div>
+      </div>
+      <div>
+        <p class="font-medium text-sm"><%= m.profiles?.full_name || 'Unknown' %></p>
+        <p class="text-xs text-gray-400"><%= m.is_verified ? 'Verified' : 'Pending' %> · <%= new Date(m.registered_at).toLocaleDateString('en-IN') %></p>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+</div>
+
+<% if (members.length === 0) { %>
+<div class="text-center py-12">
+  <p class="text-gray-400 text-lg">No face data registered.</p>
+  <p class="text-sm text-gray-400 mt-1">Members can register their face from the member app.</p>
+</div>
+<% } %>
+
+<!-- How it works -->
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mt-6">
+  <h2 class="font-semibold mb-3">How Face Check-in Works</h2>
+  <div class="space-y-3 text-sm text-gray-600">
+    <div class="flex gap-3">
+      <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold shrink-0">1</span>
+      <span>Member uploads or captures a face photo in the member app</span>
+    </div>
+    <div class="flex gap-3">
+      <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+      <span>Reception verifies the photo and enables face-based check-in</span>
+    </div>
+    <div class="flex gap-3">
+      <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+      <span>Member looks at the gate camera — system matches face and auto-checks them in</span>
+    </div>
+    <div class="flex gap-3">
+      <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs font-bold shrink-0">4</span>
+      <span>Entry recorded instantly. No QR, no card, no phone needed.</span>
+    </div>
+  </div>
+</div>

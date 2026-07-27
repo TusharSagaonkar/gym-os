@@ -1,0 +1,52 @@
+<div class="max-w-md mx-auto">
+  <h1 class="text-xl font-bold mb-6">Today's Workout</h1>
+
+  <% if (todayWorkout?.workout_templates) { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6">
+    <h2 class="text-lg font-bold text-brand-600 mb-4"><%= todayWorkout.workout_templates.name %></h2>
+    <% if (todayWorkout.workout_templates.description) { %>
+    <p class="text-sm text-gray-500 mb-4"><%= todayWorkout.workout_templates.description %></p>
+    <% } %>
+    <div class="space-y-2">
+      <% (todayWorkout.workout_templates.exercises || []).forEach(e => { %>
+      <div class="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+        <span class="font-medium"><%= e.name %></span>
+        <span class="text-gray-500"><%= e.sets %> sets × <%= e.reps %> reps</span>
+      </div>
+      <% }) %>
+    </div>
+
+    <% if (!todayWorkout.is_completed) { %>
+    <form hx-post="/member/workout/<%= todayWorkout.id %>/complete" class="mt-4">
+      <button type="submit" class="w-full py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700">
+        Mark as Completed
+      </button>
+    </form>
+    <% } else { %>
+    <div class="mt-4 py-3 bg-emerald-50 text-emerald-700 text-center rounded-lg text-sm font-medium">
+      ✓ Completed
+    </div>
+    <% } %>
+  </div>
+  <% } else { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-center">
+    <p class="text-gray-400 text-lg">No workout assigned for today.</p>
+    <p class="text-gray-400 text-sm mt-1">Your trainer will assign workouts here.</p>
+  </div>
+  <% } %>
+
+  <!-- Recent Workouts -->
+  <% if (recentWorkouts.length > 0) { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+    <h2 class="font-semibold mb-3">Recent Workouts</h2>
+    <div class="space-y-2">
+      <% recentWorkouts.forEach(w => { %>
+      <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+        <span class="text-sm font-medium"><%= w.workout_templates?.name || 'Workout' %></span>
+        <span class="text-xs text-gray-500"><%= new Date(w.assigned_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric' }) %></span>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+  <% } %>
+</div>

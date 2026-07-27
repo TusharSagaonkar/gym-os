@@ -1,0 +1,100 @@
+<h1 class="text-xl font-bold mb-6">Business Intelligence</h1>
+
+<!-- Key Metrics -->
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+  <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+    <p class="text-xs text-gray-500">Revenue (This Month vs Last)</p>
+    <p class="text-2xl font-bold mt-1">₹<%= stats.thisMonthRevenue.toLocaleString() %></p>
+    <p class="text-xs <%= stats.revenueGrowth >= 0 ? 'text-emerald-600' : 'text-red-600' %> mt-1"><%= stats.revenueGrowth >= 0 ? '↑' : '↓' %> <%= Math.abs(stats.revenueGrowth) %>%</p>
+  </div>
+  <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+    <p class="text-xs text-gray-500">Visits (MoM)</p>
+    <p class="text-2xl font-bold mt-1"><%= stats.thisMonthVisits %></p>
+    <p class="text-xs <%= stats.visitGrowth >= 0 ? 'text-emerald-600' : 'text-red-600' %> mt-1"><%= stats.visitGrowth >= 0 ? '↑' : '↓' %> <%= Math.abs(stats.visitGrowth) %>%</p>
+  </div>
+  <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+    <p class="text-xs text-gray-500">New Members</p>
+    <p class="text-2xl font-bold mt-1"><%= stats.thisMonthNew %></p>
+    <p class="text-xs text-gray-400 mt-1">Last: <%= stats.lastMonthNew %></p>
+  </div>
+  <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+    <p class="text-xs text-gray-500">Churn Rate</p>
+    <p class="text-2xl font-bold mt-1 <%= stats.churnRate > 10 ? 'text-red-600' : '' %>"><%= stats.churnRate %>%</p>
+    <p class="text-xs text-gray-400 mt-1"><%= stats.churnedThisMonth %> lost</p>
+  </div>
+  <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+    <p class="text-xs text-gray-500">Total Active</p>
+    <p class="text-2xl font-bold mt-1"><%= stats.activeNow %></p>
+    <p class="text-xs text-gray-400 mt-1"><%= stats.activeNow - stats.activeLastMonth > 0 ? '+' : '' %><%= stats.activeNow - stats.activeLastMonth %> vs last month</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Revenue Trend -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-semibold mb-4">Revenue Trend (12 Weeks)</h2>
+    <div class="flex items-end gap-1 h-40">
+      <% revenueTrend.forEach(r => { %>
+      <div class="flex-1 flex flex-col items-center gap-1" title="<%= r.week %>: ₹<%= r.amount.toLocaleString() %>">
+        <span class="text-[10px] text-gray-400"><%= r.amount > maxRevenue * 0.7 ? '₹' + Math.round(r.amount/1000) + 'k' : '' %></span>
+        <div class="w-full rounded-t <%= r.amount === maxRevenue ? 'bg-brand-500' : 'bg-gray-200' %>"
+          style="height: <%= (r.amount / maxRevenue) * 100 %>%"></div>
+        <span class="text-[10px] text-gray-400 rotate-45 origin-left translate-x-1"><%= r.week %></span>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Membership Growth -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-semibold mb-4">New Members (6 Months)</h2>
+    <div class="flex items-end gap-4 h-40">
+      <% const maxGrowth = Math.max(...monthlyGrowth.map(m => m.newMembers), 1); %>
+      <% monthlyGrowth.forEach(m => { %>
+      <div class="flex-1 flex flex-col items-center gap-1">
+        <span class="text-xs font-medium <%= m.newMembers === maxGrowth ? 'text-brand-600' : 'text-gray-500' %>"><%= m.newMembers %></span>
+        <div class="w-full max-w-[40px] rounded-t <%= m.newMembers === maxGrowth ? 'bg-brand-500' : 'bg-gray-200' %>"
+          style="height: <%= (m.newMembers / maxGrowth) * 100 %>%"></div>
+        <span class="text-xs text-gray-400"><%= m.month %></span>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Cohort Retention -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-semibold mb-4">Cohort Retention</h2>
+    <div class="space-y-4">
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-gray-500">30-Day Retention</span>
+          <span class="font-bold"><%= retention.day30 %>%</span>
+        </div>
+        <div class="bg-gray-100 rounded-full h-3">
+          <div class="bg-emerald-500 h-3 rounded-full" style="width:<%= retention.day30 %>%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-gray-500">60-Day Retention</span>
+          <span class="font-bold"><%= retention.day60 %>%</span>
+        </div>
+        <div class="bg-gray-100 rounded-full h-3">
+          <div class="bg-amber-500 h-3 rounded-full" style="width:<%= retention.day60 %>%"></div>
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2">% of members retained after joining</p>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-semibold mb-4">At a Glance</h2>
+    <div class="space-y-3">
+      <div class="flex justify-between text-sm"><span class="text-gray-500">Revenue/member</span><span class="font-medium">₹<%= stats.activeNow > 0 ? Math.round(stats.thisMonthRevenue / stats.activeNow).toLocaleString() : 0 %></span></div>
+      <div class="flex justify-between text-sm"><span class="text-gray-500">Visits/member</span><span class="font-medium"><%= stats.activeNow > 0 ? (stats.thisMonthVisits / stats.activeNow).toFixed(1) : 0 %></span></div>
+      <div class="flex justify-between text-sm"><span class="text-gray-500">MoM Revenue Growth</span><span class="font-medium <%= stats.revenueGrowth >= 0 ? 'text-emerald-600' : 'text-red-600' %>"><%= stats.revenueGrowth >= 0 ? '+' : '' %><%= stats.revenueGrowth %>%</span></div>
+      <div class="flex justify-between text-sm"><span class="text-gray-500">Churn Rate</span><span class="font-medium <%= stats.churnRate > 10 ? 'text-red-600' : '' %>"><%= stats.churnRate %>%</span></div>
+    </div>
+  </div>
+</div>

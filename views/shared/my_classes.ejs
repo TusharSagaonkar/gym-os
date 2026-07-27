@@ -1,0 +1,54 @@
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-bold">My Classes</h1>
+    <a href="/classes" class="text-brand-600 hover:underline text-sm">Browse Classes →</a>
+  </div>
+
+  <!-- Upcoming Bookings -->
+  <h2 class="font-semibold mb-3">Upcoming</h2>
+  <% if (bookings.length > 0) { %>
+  <div class="space-y-3 mb-8">
+    <% bookings.forEach(b => { %>
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center text-sm font-bold text-brand-600">
+            <%= b.class_schedules?.start_time?.substring(0, 5) %>
+          </div>
+          <div>
+            <p class="font-medium"><%= b.class_schedules?.classes?.name %></p>
+            <p class="text-xs text-gray-500">
+              <%= new Date(b.class_schedules?.schedule_date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric' }) %>
+              · <%= b.class_schedules?.trainers?.profiles?.full_name || 'No trainer' %>
+            </p>
+          </div>
+        </div>
+        <form hx-post="/classes/<%= b.schedule_id %>/cancel" hx-swap="none">
+          <button type="submit" class="text-xs text-red-500 hover:underline">Cancel</button>
+        </form>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } else { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-center mb-8">
+    <p class="text-gray-400 text-lg">No upcoming classes booked.</p>
+  </div>
+  <% } %>
+
+  <!-- Past Bookings -->
+  <% if (pastBookings.length > 0) { %>
+  <h2 class="font-semibold mb-3">Past</h2>
+  <div class="space-y-2">
+    <% pastBookings.forEach(b => { %>
+    <div class="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+      <div>
+        <p class="text-sm font-medium"><%= b.class_schedules?.classes?.name %></p>
+        <p class="text-xs text-gray-400"><%= new Date(b.class_schedules?.schedule_date + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) %></p>
+      </div>
+      <span class="text-xs text-gray-400"><%= b.status %></span>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+</div>

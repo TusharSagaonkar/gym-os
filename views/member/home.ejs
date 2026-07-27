@@ -1,0 +1,79 @@
+<div class="max-w-md mx-auto space-y-4">
+  <!-- Greeting -->
+  <div class="mb-6">
+    <p class="text-sm text-gray-500"><%= greeting %></p>
+    <h1 class="text-2xl font-bold"><%= user.full_name %></h1>
+  </div>
+
+  <!-- Membership Card -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+    <div class="flex items-center justify-between mb-3">
+      <p class="text-sm text-gray-500">Membership</p>
+      <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium bg-emerald-100 text-emerald-700">
+        <%= membership?.status || 'No membership' %>
+      </span>
+    </div>
+    <% if (membership) { %>
+    <p class="text-sm text-gray-500">Expires</p>
+    <p class="text-xl font-bold"><%= new Date(membership.end_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
+    <p class="text-xs text-gray-400 mt-1"><%= membership.membership_plans?.name %></p>
+    <% } else { %>
+    <p class="text-gray-400 text-sm">No active membership.</p>
+    <% } %>
+  </div>
+
+  <!-- Today's Workout -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+    <p class="text-sm text-gray-500 mb-1">Today's Workout</p>
+    <% if (todayWorkout?.workout_templates) { %>
+    <p class="text-lg font-bold text-brand-600"><%= todayWorkout.workout_templates.name %></p>
+    <div class="mt-2 space-y-1">
+      <% (todayWorkout.workout_templates.exercises || []).forEach(e => { %>
+      <div class="flex justify-between text-sm py-1 px-3 bg-gray-50 rounded">
+        <span><%= e.name %></span>
+        <span class="text-gray-500"><%= e.sets %> × <%= e.reps %></span>
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="text-gray-400">No workout assigned for today.</p>
+    <% } %>
+  </div>
+
+  <!-- Trainer -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+    <p class="text-sm text-gray-500 mb-1">Trainer</p>
+    <% if (trainer) { %>
+    <p class="text-lg font-bold"><%= trainer.profiles?.full_name || 'Assigned' %></p>
+    <% } else { %>
+    <p class="text-gray-400">No trainer assigned</p>
+    <% } %>
+  </div>
+
+  <!-- Gym Busy -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+    <p class="text-sm text-gray-500 mb-1">Gym Busy</p>
+    <p class="text-lg font-bold <%= busyColor %>"><%= busyLevel %></p>
+    <p class="text-xs text-gray-400 mt-1"><%= insideCount %> members inside</p>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="grid grid-cols-2 gap-3 pt-2">
+    <a href="/member/qr" class="flex flex-col items-center justify-center p-4 bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition text-center">
+      <span class="text-2xl mb-1">📱</span>
+      <span class="text-sm font-medium">QR Check-in</span>
+    </a>
+    <a href="/member/workout" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition text-center">
+      <span class="text-2xl mb-1">💪</span>
+      <span class="text-sm font-medium">My Workout</span>
+    </a>
+    <a href="/member/progress" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition text-center">
+      <span class="text-2xl mb-1">📊</span>
+      <span class="text-sm font-medium">Progress</span>
+    </a>
+    <a href="/member/bookings" class="flex flex-col items-center justify-center p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition text-center">
+      <span class="text-2xl mb-1">📅</span>
+      <span class="text-sm font-medium">Bookings</span>
+    </a>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-bold">Membership Plans</h1>
+  <button onclick="document.getElementById('planModal').classList.remove('hidden')"
+    class="px-4 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700">Add Plan</button>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <% plans.forEach(p => { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 <%= !p.is_active ? 'opacity-60' : '' %>">
+    <div class="flex items-start justify-between mb-2">
+      <h3 class="font-semibold"><%= p.name %></h3>
+      <span class="inline-flex px-2 py-0.5 text-xs rounded-full <%= p.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600' %>"><%= p.is_active ? 'Active' : 'Inactive' %></span>
+    </div>
+    <p class="text-2xl font-bold text-brand-600">₹<%= Number(p.price).toLocaleString() %></p>
+    <p class="text-sm text-gray-500 mt-1"><%= p.duration_months === 0 ? 'Single Day' : `${p.duration_months} month${p.duration_months > 1 ? 's' : ''}` %></p>
+    <% if (p.description) { %><p class="text-xs text-gray-400 mt-2"><%= p.description %></p><% } %>
+  </div>
+  <% }) %>
+</div>
+
+<!-- Add Plan Modal -->
+<div id="planModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+    <h3 class="font-semibold text-lg mb-4">Add Membership Plan</h3>
+    <form method="POST" action="/owner/plans">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
+          <input type="text" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Duration (months)</label>
+          <input type="number" name="duration_months" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" value="1">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+          <input type="number" name="price" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <input type="text" name="description" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
+      </div>
+      <div class="flex gap-2 mt-6">
+        <button type="button" onclick="document.getElementById('planModal').classList.add('hidden')"
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">Cancel</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,140 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-bold">Churn Analysis</h1>
+  <div class="flex gap-2">
+    <button hx-post="/analytics/generate-insights" hx-swap="none"
+      class="px-4 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700">
+      Generate Insights
+    </button>
+  </div>
+</div>
+
+<!-- Summary -->
+<div class="grid grid-cols-4 gap-4 mb-6">
+  <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+    <p class="text-xs text-gray-500">Active Members</p>
+    <p class="text-2xl font-bold"><%= stats.totalActive %></p>
+  </div>
+  <div class="bg-white rounded-xl p-4 border border-red-100 shadow-sm <%= stats.atRiskCount > 0 ? 'bg-red-50' : '' %>">
+    <p class="text-xs text-gray-500">At Risk (No Visit 7d+)</p>
+    <p class="text-2xl font-bold <%= stats.atRiskCount > 0 ? 'text-red-600' : '' %>"><%= stats.atRiskCount %></p>
+  </div>
+  <div class="bg-white rounded-xl p-4 border border-amber-100 shadow-sm <%= stats.disengagingCount > 0 ? 'bg-amber-50' : '' %>">
+    <p class="text-xs text-gray-500">Disengaging</p>
+    <p class="text-2xl font-bold <%= stats.disengagingCount > 0 ? 'text-amber-600' : '' %>"><%= stats.disengagingCount %></p>
+  </div>
+  <div class="bg-white rounded-xl p-4 border border-blue-100 shadow-sm">
+    <p class="text-xs text-gray-500">Expiring ≤7 Days</p>
+    <p class="text-2xl font-bold text-blue-600"><%= stats.expiringCount %></p>
+  </div>
+</div>
+
+<!-- At Risk Members -->
+<div class="mb-8">
+  <h2 class="font-semibold mb-3 flex items-center gap-2">
+    <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+    At Risk Members
+  </h2>
+  <% if (atRisk.length > 0) { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-600">
+        <tr>
+          <th class="text-left px-4 py-3 font-medium">Member</th>
+          <th class="text-left px-4 py-3 font-medium">Phone</th>
+          <th class="text-left px-4 py-3 font-medium">Days Inactive</th>
+          <th class="text-left px-4 py-3 font-medium">Expires</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% atRisk.forEach(m => { %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 font-medium"><%= m.full_name || m.profiles?.full_name %></td>
+          <td class="px-4 py-3 text-gray-500"><%= m.phone || m.profiles?.phone || '—' %></td>
+          <td class="px-4 py-3">
+            <span class="inline-flex px-2 py-0.5 text-xs rounded-full <%= m.daysInactive > 14 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' %>">
+              <%= m.daysInactive %> days
+            </span>
+          </td>
+          <td class="px-4 py-3 text-gray-500"><%= new Date(m.end_date).toLocaleDateString('en-IN') %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } else { %>
+  <p class="text-gray-400 text-sm pl-3">No at-risk members. Great job!</p>
+  <% } %>
+</div>
+
+<!-- Expiring Soon -->
+<div class="mb-8">
+  <h2 class="font-semibold mb-3 flex items-center gap-2">
+    <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+    Expiring Within 7 Days
+  </h2>
+  <% if (expiring.length > 0) { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-600">
+        <tr>
+          <th class="text-left px-4 py-3 font-medium">Member</th>
+          <th class="text-left px-4 py-3 font-medium">Phone</th>
+          <th class="text-left px-4 py-3 font-medium">Days Left</th>
+          <th class="text-left px-4 py-3 font-medium">Last Visit</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% expiring.forEach(m => { %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 font-medium"><%= m.full_name || m.profiles?.full_name %></td>
+          <td class="px-4 py-3 text-gray-500"><%= m.phone || m.profiles?.phone || '—' %></td>
+          <td class="px-4 py-3">
+            <span class="inline-flex px-2 py-0.5 text-xs rounded-full <%= m.daysLeft <= 3 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' %>">
+              <%= m.daysLeft %> days
+            </span>
+          </td>
+          <td class="px-4 py-3 text-gray-500"><%= m.lastVisit %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } else { %>
+  <p class="text-gray-400 text-sm pl-3">No memberships expiring this week.</p>
+  <% } %>
+</div>
+
+<!-- Disengaging -->
+<div>
+  <h2 class="font-semibold mb-3 flex items-center gap-2">
+    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+    Disengaging Members
+    <span class="text-xs font-normal text-gray-400">(visiting less than before)</span>
+  </h2>
+  <% if (disengaging.length > 0) { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-600">
+        <tr>
+          <th class="text-left px-4 py-3 font-medium">Member</th>
+          <th class="text-left px-4 py-3 font-medium">Recent</th>
+          <th class="text-left px-4 py-3 font-medium">Previous</th>
+          <th class="text-left px-4 py-3 font-medium">Decline</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% disengaging.forEach(m => { %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 font-medium"><%= m.full_name || m.profiles?.full_name %></td>
+          <td class="px-4 py-3 text-gray-500"><%= m.recentVisits %> visits</td>
+          <td class="px-4 py-3 text-gray-500"><%= m.olderVisits %> visits</td>
+          <td class="px-4 py-3"><span class="text-red-600 font-medium">↓<%= m.decline %>%</span></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } else { %>
+  <p class="text-gray-400 text-sm pl-3">No disengaging members detected.</p>
+  <% } %>
+</div>

@@ -1,0 +1,39 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-bold">All Members</h1>
+  <a href="/reception/new-admission" class="px-4 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700">New Admission</a>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-600">
+      <tr>
+        <th class="text-left px-4 py-3 font-medium">Name</th>
+        <th class="text-left px-4 py-3 font-medium">Phone</th>
+        <th class="text-left px-4 py-3 font-medium">Plan</th>
+        <th class="text-left px-4 py-3 font-medium">Status</th>
+        <th class="text-left px-4 py-3 font-medium">Expires</th>
+        <th class="text-left px-4 py-3 font-medium"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% members.forEach(m => { %>
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3 font-medium"><%= m.full_name %></td>
+        <td class="px-4 py-3 text-gray-500"><%= m.phone || '—' %></td>
+        <td class="px-4 py-3 text-sm"><%= m.memberships?.[0]?.membership_plans?.name || '—' %></td>
+        <td class="px-4 py-3">
+          <% const s = m.memberships?.[0]?.status; %>
+          <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium
+            <%= s === 'active' ? 'bg-emerald-100 text-emerald-700' : s === 'expired' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' %>">
+            <%= s || '—' %>
+          </span>
+        </td>
+        <td class="px-4 py-3 text-gray-500"><%= m.memberships?.[0]?.end_date ? new Date(m.memberships[0].end_date).toLocaleDateString('en-IN') : '—' %></td>
+        <td class="px-4 py-3">
+          <a href="/owner/members/<%= m.id %>" class="text-brand-600 hover:underline text-xs">View →</a>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,57 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-bold">Reports</h1>
+  <div class="flex gap-2">
+    <a href="/owner/reports?type=daily" class="px-4 py-2 text-sm rounded-lg <%= type === 'daily' ? 'bg-brand-600 text-white' : 'border border-gray-300 hover:bg-gray-50' %>">Daily</a>
+    <a href="/owner/reports?type=weekly" class="px-4 py-2 text-sm rounded-lg <%= type === 'weekly' ? 'bg-brand-600 text-white' : 'border border-gray-300 hover:bg-gray-50' %>">Weekly</a>
+    <a href="/owner/reports?type=monthly" class="px-4 py-2 text-sm rounded-lg <%= type === 'monthly' ? 'bg-brand-600 text-white' : 'border border-gray-300 hover:bg-gray-50' %>">Monthly</a>
+  </div>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+    <p class="text-sm text-gray-500">Revenue</p>
+    <p class="text-2xl font-bold mt-1">₹<%= report.totalRevenue.toLocaleString() %></p>
+  </div>
+  <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+    <p class="text-sm text-gray-500">Attendance</p>
+    <p class="text-2xl font-bold mt-1"><%= report.totalAttendance %></p>
+  </div>
+  <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+    <p class="text-sm text-gray-500">New Members</p>
+    <p class="text-2xl font-bold mt-1 text-brand-600"><%= report.newMembers %></p>
+  </div>
+  <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+    <p class="text-sm text-gray-500">Churned</p>
+    <p class="text-2xl font-bold mt-1 text-red-600"><%= report.churned %></p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+    <h3 class="font-semibold mb-4">Performance</h3>
+    <div class="space-y-3">
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Renewals</span>
+        <span class="font-medium"><%= report.renewals %></span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Avg Daily Attendance</span>
+        <span class="font-medium"><%= Math.round(report.avgAttendance) %></span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-500">Avg Revenue / Day</span>
+        <span class="font-medium">₹<%= Math.round(report.totalRevenue / (type === 'daily' ? 1 : type === 'weekly' ? 7 : 30)).toLocaleString() %></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+    <h3 class="font-semibold mb-4">Summary</h3>
+    <div class="space-y-3 text-sm text-gray-600">
+      <p><%= type === 'daily' ? 'Today' : type === 'weekly' ? 'This week' : 'This month' %>: <%= report.newMembers %> new members joined.</p>
+      <p>₹<%= report.totalRevenue.toLocaleString() %> collected in total.</p>
+      <% if (report.churned > 0) { %><p class="text-red-600"><%= report.churned %> memberships expired.</p><% } %>
+      <p>Average <%= Math.round(report.avgAttendance) %> visits per day.</p>
+    </div>
+  </div>
+</div>

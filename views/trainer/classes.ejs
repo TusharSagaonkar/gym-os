@@ -1,0 +1,46 @@
+<h1 class="text-xl font-bold mb-6">My Classes</h1>
+
+<!-- Upcoming -->
+<h2 class="font-semibold mb-3">Upcoming</h2>
+<% if (schedules.length > 0) { %>
+<div class="space-y-3 mb-8">
+  <% schedules.forEach(s => { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="font-medium"><%= s.classes?.name %></p>
+        <p class="text-sm text-gray-500">
+          <%= new Date(s.schedule_date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric' }) %>
+          at <%= s.start_time?.substring(0, 5) %>
+        </p>
+        <p class="text-xs text-gray-400 capitalize mt-1"><%= s.classes?.category %></p>
+      </div>
+      <div class="text-right">
+        <p class="text-sm text-gray-500"><%= s.booked_count ? s.booked_count[0]?.count || 0 : 0 %>/<%= s.capacity %> booked</p>
+        <span class="inline-flex px-2 py-0.5 text-xs rounded-full mt-1 <%= s.status === 'scheduled' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700' %>"><%= s.status %></span>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+</div>
+<% } else { %>
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 text-center mb-8">
+  <p class="text-gray-400">No upcoming classes assigned.</p>
+</div>
+<% } %>
+
+<!-- Past -->
+<% if (pastSchedules.length > 0) { %>
+<h2 class="font-semibold mb-3">Past Classes</h2>
+<div class="space-y-2">
+  <% pastSchedules.forEach(s => { %>
+  <div class="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
+    <div>
+      <p class="text-sm font-medium"><%= s.classes?.name %></p>
+      <p class="text-xs text-gray-400"><%= new Date(s.schedule_date + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) %></p>
+    </div>
+    <span class="text-xs text-gray-400"><%= s.status %></span>
+  </div>
+  <% }) %>
+</div>
+<% } %>

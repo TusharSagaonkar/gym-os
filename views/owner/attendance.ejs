@@ -1,0 +1,48 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-bold">Attendance</h1>
+  <form hx-get="/owner/attendance" hx-target="#attendanceLog" hx-trigger="change">
+    <input type="date" name="date" value="<%= date %>"
+      class="px-3 py-2 text-sm border border-gray-300 rounded-lg">
+  </form>
+</div>
+
+<div id="attendanceLog">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4">
+    <div class="flex gap-6">
+      <div><p class="text-sm text-gray-500">Total Visits</p><p class="text-2xl font-bold"><%= logs.length %></p></div>
+      <div><p class="text-sm text-gray-500">Inside Now</p><p class="text-2xl font-bold text-emerald-600"><%= insideCount %></p></div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-600">
+        <tr>
+          <th class="text-left px-4 py-3 font-medium">Member</th>
+          <th class="text-left px-4 py-3 font-medium">Check In</th>
+          <th class="text-left px-4 py-3 font-medium">Check Out</th>
+          <th class="text-left px-4 py-3 font-medium">Duration</th>
+          <th class="text-left px-4 py-3 font-medium">Status</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% logs.forEach(l => { %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 font-medium"><%= l.profiles?.full_name || 'Unknown' %></td>
+          <td class="px-4 py-3 text-gray-500"><%= new Date(l.check_in).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></td>
+          <td class="px-4 py-3 text-gray-500"><%= l.check_out ? new Date(l.check_out).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '—' %></td>
+          <td class="px-4 py-3 text-gray-500"><%= l.duration_minutes ? `${Math.round(l.duration_minutes)} min` : '—' %></td>
+          <td class="px-4 py-3">
+            <span class="inline-flex px-2 py-0.5 text-xs rounded-full font-medium <%= l.check_out ? 'bg-gray-100 text-gray-600' : 'bg-emerald-100 text-emerald-700' %>">
+              <%= l.check_out ? 'Left' : 'Inside' %>
+            </span>
+          </td>
+        </tr>
+        <% }) %>
+        <% if (logs.length === 0) { %>
+        <tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">No attendance records for this date.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>

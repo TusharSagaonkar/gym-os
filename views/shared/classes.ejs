@@ -1,0 +1,62 @@
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl font-bold">Classes</h1>
+    <a href="/classes/my-bookings" class="text-brand-600 hover:underline text-sm">My Bookings →</a>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+    <% categories.forEach(cat => { %>
+    <a href="/classes?category=<%= cat %>"
+      class="px-4 py-1.5 rounded-full text-sm whitespace-nowrap <%= selectedCategory === cat ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+      <%= cat.charAt(0).toUpperCase() + cat.slice(1) %>
+    </a>
+    <% }) %>
+  </div>
+
+  <!-- Class List -->
+  <% if (schedules.length > 0) { %>
+  <div class="space-y-3">
+    <% const grouped = {}; schedules.forEach(s => { const d = s.schedule_date; if (!grouped[d]) grouped[d] = []; grouped[d].push(s); }); %>
+    <% Object.entries(grouped).forEach(([date, daySchedules]) => { %>
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div class="bg-gray-50 px-5 py-2 text-sm font-medium text-gray-600">
+        <%= new Date(date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' }) %>
+      </div>
+      <div class="divide-y divide-gray-100">
+        <% daySchedules.forEach(s => { %>
+        <div class="px-5 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center text-sm font-bold text-brand-600">
+              <%= s.start_time?.substring(0, 5) %>
+            </div>
+            <div>
+              <p class="font-medium"><%= s.classes?.name %></p>
+              <p class="text-xs text-gray-500">
+                <%= s.trainers?.profiles?.full_name || 'No trainer' %>
+                · <span class="<%= s.booked_count >= s.capacity ? 'text-red-500' : 'text-gray-400' %>"><%= s.booked_count || 0 %>/<%= s.capacity %> booked</span>
+              </p>
+            </div>
+          </div>
+          <div id="booking-<%= s.id %>">
+            <form hx-post="/classes/<%= s.id %>/book" hx-target="#booking-<%= s.id %>" hx-swap="innerHTML">
+              <button type="submit"
+                class="px-4 py-2 text-sm rounded-lg <%= s.booked_count >= s.capacity ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-brand-600 text-white hover:bg-brand-700' %>"
+                <%= s.booked_count >= s.capacity ? 'disabled' : '' %>>
+                <%= s.booked_count >= s.capacity ? 'Full' : 'Book' %>
+              </button>
+            </form>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } else { %>
+  <div class="text-center py-12">
+    <p class="text-gray-400 text-lg">No upcoming classes.</p>
+    <p class="text-sm text-gray-400 mt-1">Check back later for new schedules.</p>
+  </div>
+  <% } %>
+</div>

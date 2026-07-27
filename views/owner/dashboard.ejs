@@ -1,0 +1,71 @@
+<div id="dashboard" hx-get="/owner" hx-trigger="every 30s" hx-swap="outerHTML">
+  <!-- Stat cards row -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+      <p class="text-sm text-gray-500">Members Inside</p>
+      <p class="text-3xl font-bold mt-1"><%= stats.membersInside %></p>
+      <div class="mt-3 bg-gray-100 rounded-full h-2">
+        <div class="bg-emerald-500 h-2 rounded-full" style="width:<%= stats.capacityPct %>%"></div>
+      </div>
+      <p class="text-xs text-gray-400 mt-1"><%= stats.capacityPct %>% capacity</p>
+    </div>
+
+    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+      <p class="text-sm text-gray-500">Trainers</p>
+      <p class="text-3xl font-bold mt-1"><%= stats.trainerCount %></p>
+      <p class="text-xs text-gray-400 mt-1">On duty</p>
+    </div>
+
+    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+      <p class="text-sm text-gray-500">Today's Collection</p>
+      <p class="text-3xl font-bold mt-1">₹<%= stats.todayTotal.toLocaleString() %></p>
+    </div>
+
+    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+      <p class="text-sm text-gray-500">This Month</p>
+      <p class="text-3xl font-bold mt-1">₹<%= stats.monthTotal.toLocaleString() %></p>
+    </div>
+  </div>
+
+  <!-- Peak + Renewals + Alerts row -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+      <p class="text-sm text-gray-500">Peak Today</p>
+      <p class="text-2xl font-bold mt-1"><%= stats.peakDisplay %></p>
+    </div>
+
+    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+      <p class="text-sm text-gray-500">Active Members</p>
+      <p class="text-2xl font-bold mt-1"><%= stats.activeMembers %></p>
+    </div>
+
+    <div class="bg-white rounded-xl p-5 border border-amber-100 shadow-sm <%= stats.expiringMembers > 0 ? 'bg-amber-50' : '' %>">
+      <p class="text-sm text-gray-500">Expiring Soon</p>
+      <p class="text-2xl font-bold mt-1 <%= stats.expiringMembers > 0 ? 'text-amber-600' : '' %>"><%= stats.expiringMembers %></p>
+      <p class="text-xs text-gray-400 mt-1">Within 3 days</p>
+    </div>
+  </div>
+
+  <!-- Renewals + Smart Suggestion -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <% if (stats.renewalsDue > 0) { %>
+    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+      <p class="text-sm font-medium text-gray-700 mb-2">Renewals Due This Week</p>
+      <p class="text-3xl font-bold text-brand-600"><%= stats.renewalsDue %></p>
+      <a href="/owner/members?status=active" class="text-sm text-brand-600 hover:underline mt-2 inline-block">View members →</a>
+    </div>
+    <% } %>
+
+    <% if (stats.suggestion) { %>
+    <div class="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+      <div class="flex items-start gap-3">
+        <span class="text-xl"><%= stats.suggestion.type === 'opportunity' ? '💡' : '⚠️' %></span>
+        <div>
+          <p class="font-medium text-gray-800"><%= stats.suggestion.title %></p>
+          <p class="text-sm text-gray-500 mt-1"><%= stats.suggestion.description %></p>
+        </div>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>

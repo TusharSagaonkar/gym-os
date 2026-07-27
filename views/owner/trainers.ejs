@@ -1,0 +1,32 @@
+<h1 class="text-xl font-bold mb-6">Trainers</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <% trainers.forEach(t => { %>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold">
+        <%= t.profiles?.full_name?.charAt(0).toUpperCase() || 'T' %>
+      </div>
+      <div>
+        <p class="font-medium"><%= t.profiles?.full_name || 'Unknown' %></p>
+        <p class="text-xs text-gray-500"><%= t.profiles?.phone || '' %></p>
+      </div>
+    </div>
+    <div class="flex justify-between text-sm border-t border-gray-100 pt-3">
+      <div><p class="text-gray-500">Members</p><p class="font-bold"><%= t.memberCount %>/<%= t.max_members %></p></div>
+      <div><p class="text-gray-500">Status</p><p class="<%= t.profiles?.is_active ? 'text-emerald-600' : 'text-red-600' %> font-medium"><%= t.profiles?.is_active ? 'Active' : 'Inactive' %></p></div>
+    </div>
+    <% if (t.specializations?.length) { %>
+    <div class="mt-2 flex flex-wrap gap-1">
+      <% t.specializations.forEach(s => { %>
+      <span class="px-2 py-0.5 bg-gray-100 rounded text-xs text-gray-600"><%= s %></span>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+  <% }) %>
+</div>
+
+<% if (trainers.length === 0) { %>
+<p class="text-gray-400 text-center py-8">No trainers added yet.</p>
+<% } %>
