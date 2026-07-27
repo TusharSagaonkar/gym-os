@@ -1,0 +1,21 @@
+{
+  "apps": [
+    {
+      "name": "gym-os",
+      "script": "server.js",
+      "cwd": "/opt/gym-os",
+      "instances": 1,
+      "exec_mode": "fork",
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "max_memory_restart": "512M",
+      "log_date_format": "YYYY-MM-DD HH:mm:ss",
+      "error_file": "/var/log/gym-os/error.log",
+      "out_file": "/var/log/gym-os/out.log",
+      "merge_logs": true,
+      "autorestart": true,
+      "watch": false
+    }
+  ]
+}
