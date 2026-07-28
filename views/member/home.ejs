@@ -1,14 +1,12 @@
 <div class="space-y-6">
   <div class="flex items-center justify-between">
     <div>
-      <h2 class="text-xl font-bold">Hi, <%= user.full_name %></h2>
+      <h2 class="text-xl font-bold"><%= greeting %>, <%= user.full_name %></h2>
       <p class="text-sm text-gray-500 mt-0.5">
         <% if (membership && membership.status === 'active') { %>
-          <span class="text-emerald-600 font-medium">Active</span> &middot; <%= membership.plan_name %> &middot; Expires <%= membership.expiry_date ? new Date(membership.expiry_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A' %>
-        <% } else if (membership && membership.status === 'expiring_soon') { %>
-          <span class="text-amber-600 font-medium">Expiring soon</span> &middot; <%= membership.plan_name %>
+          <span class="text-emerald-600 font-medium">Active</span> &middot; <%= membership.membership_plans?.name || 'Member' %> &middot; Expires <%= membership.end_date ? new Date(membership.end_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A' %>
         <% } else { %>
-          <span class="text-gray-400 font-medium">Inactive</span>
+          <span class="text-gray-400 font-medium">No active membership</span>
         <% } %>
       </p>
     </div>
@@ -21,46 +19,46 @@
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
     <div class="stat-card group">
       <div class="flex items-center justify-between mb-2">
-        <span class="stat-label">This Month</span>
-        <div class="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+        <span class="stat-label">Gym Status</span>
+        <div class="w-8 h-8 rounded-xl <%= busyColor === 'text-emerald-600' ? 'bg-emerald-50' : busyColor === 'text-amber-600' ? 'bg-amber-50' : 'bg-red-50' %> flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+          <svg class="w-4 h-4 <%= busyColor %>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
         </div>
       </div>
-      <div class="stat-value"><%= monthVisits || 0 %></div>
-      <div class="text-xs text-gray-400 mt-1">visits</div>
+      <div class="stat-value"><%= busyLevel %></div>
+      <div class="text-xs text-gray-400 mt-1"><%= insideCount || 0 %> people inside</div>
     </div>
 
     <div class="stat-card group">
       <div class="flex items-center justify-between mb-2">
-        <span class="stat-label">Streak</span>
-        <div class="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-          <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
-        </div>
-      </div>
-      <div class="stat-value"><%= streak || 0 %></div>
-      <div class="text-xs text-gray-400 mt-1">days streak</div>
-    </div>
-
-    <div class="stat-card group">
-      <div class="flex items-center justify-between mb-2">
-        <span class="stat-label">Classes</span>
-        <div class="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-          <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-        </div>
-      </div>
-      <div class="stat-value"><%= upcomingClasses || 0 %></div>
-      <div class="text-xs text-gray-400 mt-1">upcoming</div>
-    </div>
-
-    <div class="stat-card group">
-      <div class="flex items-center justify-between mb-2">
-        <span class="stat-label">Days Left</span>
+        <span class="stat-label">Membership</span>
         <div class="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
         </div>
       </div>
-      <div class="stat-value"><%= daysLeft || 0 %></div>
-      <div class="text-xs text-gray-400 mt-1"><%= membership && membership.status === 'active' ? 'remaining' : '—' %></div>
+      <div class="stat-value text-sm font-semibold"><%= membership?.status === 'active' ? 'Active' : 'Inactive' %></div>
+      <div class="text-xs text-gray-400 mt-1"><%= membership?.membership_plans?.name || 'No plan' %></div>
+    </div>
+
+    <div class="stat-card group">
+      <div class="flex items-center justify-between mb-2">
+        <span class="stat-label">Trainer</span>
+        <div class="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+          <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        </div>
+      </div>
+      <div class="stat-value text-sm font-semibold"><%= trainer?.profiles?.full_name || 'Unassigned' %></div>
+      <div class="text-xs text-gray-400 mt-1">Personal trainer</div>
+    </div>
+
+    <div class="stat-card group">
+      <div class="flex items-center justify-between mb-2">
+        <span class="stat-label">Alerts</span>
+        <div class="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        </div>
+      </div>
+      <div class="stat-value"><%= unreadNotifications || 0 %></div>
+      <div class="text-xs text-gray-400 mt-1">unread</div>
     </div>
   </div>
 
@@ -70,19 +68,17 @@
         <h3 class="text-sm font-semibold">Today's Workout</h3>
         <a href="/member/workout" class="text-xs text-brand-600 hover:text-brand-700 font-medium transition-colors">Full plan →</a>
       </div>
-      <% if (todaysWorkout && todaysWorkout.length) { %>
+      <% if (todayWorkout && todayWorkout.workout_templates) { %>
         <div class="space-y-2">
-        <% todaysWorkout.forEach(function(ex) { %>
-          <div class="flex items-center gap-3 px-3 py-2.5 bg-gray-50 rounded-xl">
+          <div class="flex items-center gap-3 px-3 py-2.5 bg-brand-50/50 rounded-xl">
             <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center shrink-0">
               <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
             <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium"><%= ex.name %></div>
-              <div class="text-xs text-gray-400"><%= ex.sets %> × <%= ex.reps %> <% if (ex.weight) { %>@ <%= ex.weight %>kg<% } %></div>
+              <div class="text-sm font-medium"><%= todayWorkout.workout_templates.name %></div>
+              <div class="text-xs text-gray-400"><%= todayWorkout.workout_templates.focus_area %> &middot; <%= todayWorkout.workout_templates.difficulty %></div>
             </div>
           </div>
-        <% }); %>
         </div>
       <% } else { %>
         <div class="text-center py-8">
@@ -97,68 +93,34 @@
 
     <div class="card p-5">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-sm font-semibold">Upcoming Classes</h3>
-        <a href="/member/bookings" class="text-xs text-brand-600 hover:text-brand-700 font-medium transition-colors">Book →</a>
+        <h3 class="text-sm font-semibold">Quick Actions</h3>
       </div>
-      <% if (classes && classes.length) { %>
-        <div class="space-y-2">
-        <% classes.forEach(function(cls) { %>
-          <div class="flex items-center gap-3 px-3 py-2.5 bg-purple-50/50 rounded-xl">
-            <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
-              <span class="text-xs font-bold text-purple-600"><%= cls.start_time %></span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium"><%= cls.name %></div>
-              <div class="text-xs text-gray-400"><%= cls.trainer_name %> &middot; <%= cls.available %> spots</div>
-            </div>
-            <button hx-post="/member/bookings/<%= cls.id %>/book"
-                    hx-swap="none"
-                    class="px-3 py-1.5 bg-purple-600 text-white text-xs font-medium rounded-lg hover:bg-purple-700 transition-colors active:scale-95">
-              Join
-            </button>
+      <div class="grid grid-cols-2 gap-3">
+        <a href="/member/qr" class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-brand-50 transition-colors group">
+          <div class="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
           </div>
-        <% }); %>
-        </div>
-      <% } else { %>
-        <div class="text-center py-8">
-          <div class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
-            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <span class="text-xs font-medium text-gray-600">Check-in</span>
+        </a>
+        <a href="/member/workout" class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-brand-50 transition-colors group">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           </div>
-          <p class="text-sm text-gray-500">No upcoming classes</p>
-        </div>
-      <% } %>
-    </div>
-  </div>
-
-  <div class="card p-5">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-sm font-semibold">Recent Visits</h3>
-    </div>
-    <% if (recentVisits && recentVisits.length) { %>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="text-[11px] text-gray-400 uppercase tracking-wider">
-              <th class="text-left font-medium pb-3">Date</th>
-              <th class="text-left font-medium pb-3">Time</th>
-              <th class="text-left font-medium pb-3">Duration</th>
-            </tr>
-          </thead>
-          <tbody>
-          <% recentVisits.forEach(function(v) { %>
-            <tr class="table-row border-b border-gray-50 last:border-0">
-              <td class="py-2.5 text-gray-700"><%= v.date %></td>
-              <td class="py-2.5 text-gray-500"><%= v.time %></td>
-              <td class="py-2.5">
-                <span class="badge-info"><%= v.duration %>min</span>
-              </td>
-            </tr>
-          <% }); %>
-          </tbody>
-        </table>
+          <span class="text-xs font-medium text-gray-600">Workout</span>
+        </a>
+        <a href="/member/progress" class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-brand-50 transition-colors group">
+          <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          </div>
+          <span class="text-xs font-medium text-gray-600">Progress</span>
+        </a>
+        <a href="/member/bookings" class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-brand-50 transition-colors group">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <span class="text-xs font-medium text-gray-600">Bookings</span>
+        </a>
       </div>
-    <% } else { %>
-      <div class="text-center py-6 text-sm text-gray-400">No visits yet this month</div>
-    <% } %>
+    </div>
   </div>
 </div>

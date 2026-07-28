@@ -1,79 +1,64 @@
 <div class="max-w-2xl space-y-6">
-  <div class="flex items-center justify-between">
-    <div>
-      <h2 class="text-xl font-bold">Workout Plan</h2>
-      <p class="text-sm text-gray-500 mt-0.5">Assigned by your trainer</p>
-    </div>
+  <div>
+    <h2 class="text-xl font-bold">Today's Workout</h2>
+    <p class="text-sm text-gray-500 mt-0.5">Assigned by your trainer</p>
   </div>
 
-  <% if (workoutPlan && workoutPlan.exercises && workoutPlan.exercises.length) { %>
+  <% if (todayWorkout && todayWorkout.workout_templates) { %>
     <div class="card p-5">
       <div class="flex items-center justify-between mb-4">
         <div>
-          <h3 class="text-sm font-semibold"><%= workoutPlan.name %></h3>
-          <p class="text-xs text-gray-400 mt-0.5"><%= workoutPlan.day %> &middot; <%= workoutPlan.focus %></p>
+          <h3 class="text-sm font-semibold"><%= todayWorkout.workout_templates.name %></h3>
+          <p class="text-xs text-gray-400 mt-0.5"><%= todayWorkout.workout_templates.focus_area || '' %> &middot; <%= todayWorkout.workout_templates.difficulty || '' %></p>
         </div>
         <div class="w-9 h-9 rounded-xl bg-brand-50 flex items-center justify-center">
           <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         </div>
       </div>
 
-      <div class="space-y-1">
-        <% workoutPlan.exercises.forEach(function(ex, i) { %>
-          <div class="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl hover:bg-brand-50/50 transition-colors group">
-            <div class="w-7 h-7 rounded-lg bg-brand-100 flex items-center justify-center shrink-0 text-xs font-bold text-brand-600 group-hover:bg-brand-600 group-hover:text-white transition-colors">
-              <%= i + 1 %>
+      <% if (todayWorkout.workout_templates.exercises && todayWorkout.workout_templates.exercises.length) { %>
+        <div class="space-y-1">
+          <% todayWorkout.workout_templates.exercises.forEach(function(ex, i) { %>
+            <div class="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl hover:bg-brand-50/50 transition-colors group">
+              <div class="w-7 h-7 rounded-lg bg-brand-100 flex items-center justify-center shrink-0 text-xs font-bold text-brand-600">
+                <%= i + 1 %>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium"><%= typeof ex === 'object' ? (ex.name || ex) : ex %></div>
+                <% if (typeof ex === 'object') { %>
+                  <div class="text-xs text-gray-400"><%= ex.muscle_group || '' %> &middot; <%= ex.sets || 0 %> × <%= ex.reps || 0 %></div>
+                <% } %>
+              </div>
+              <div class="text-right shrink-0">
+                <% if (typeof ex === 'object') { %>
+                  <div class="text-sm font-semibold tabular-nums"><%= ex.sets || 0 %> × <%= ex.reps || 0 %></div>
+                  <% if (ex.weight) { %>
+                    <div class="text-xs text-gray-400"><%= ex.weight %> kg</div>
+                  <% } %>
+                <% } %>
+              </div>
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium"><%= ex.name %></div>
-              <div class="text-xs text-gray-400"><%= ex.muscle_group %></div>
-            </div>
-            <div class="text-right shrink-0">
-              <div class="text-sm font-semibold tabular-nums"><%= ex.sets %> × <%= ex.reps %></div>
-              <% if (ex.weight) { %>
-                <div class="text-xs text-gray-400"><%= ex.weight %> kg</div>
-              <% } %>
-            </div>
-          </div>
-        <% }); %>
-      </div>
-    </div>
-
-    <% if (workoutPlan.equipment && workoutPlan.equipment.length) { %>
-      <div class="card p-5">
-        <h3 class="text-sm font-semibold mb-3">Equipment</h3>
-        <div class="flex flex-wrap gap-2">
-          <% workoutPlan.equipment.forEach(function(eq) { %>
-            <span class="badge bg-blue-50 text-blue-700 ring-1 ring-blue-600/20"><%= eq %></span>
           <% }); %>
         </div>
-      </div>
-    <% } %>
+      <% } %>
+    </div>
   <% } else { %>
     <div class="card p-12 text-center">
       <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
         <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
       </div>
       <h3 class="text-sm font-semibold mb-1">No workout plan</h3>
-      <p class="text-xs text-gray-400">Your trainer hasn't assigned a plan yet.</p>
+      <p class="text-xs text-gray-400">Your trainer hasn't assigned a plan for today.</p>
     </div>
   <% } %>
 
   <div class="card p-5">
-    <h3 class="text-sm font-semibold mb-4">Log Today's Workout</h3>
+    <h3 class="text-sm font-semibold mb-4">Log Your Training</h3>
     <form method="POST" action="/member/workout/log" class="space-y-4">
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">Exercise</label>
-          <select name="exercise" class="input">
-            <option value="">Select exercise</option>
-            <% if (workoutPlan && workoutPlan.exercises) { %>
-              <% workoutPlan.exercises.forEach(function(ex) { %>
-                <option value="<%= ex.name %>"><%= ex.name %></option>
-              <% }); %>
-            <% } %>
-            <option value="other">Other</option>
-          </select>
+          <input type="text" name="exercise" class="input" placeholder="Bench Press">
         </div>
         <div>
           <label class="block text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">Sets</label>

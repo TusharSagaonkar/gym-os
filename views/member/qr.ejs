@@ -6,11 +6,11 @@
 
   <div class="card p-8 flex flex-col items-center">
     <div class="bg-white border-2 border-gray-100 rounded-2xl p-4 mb-4 shadow-sm">
-      <div id="qr-code" class="w-56 h-56 bg-gray-100 rounded-xl flex items-center justify-center">
-        <% if (qrCode) { %>
-          <img src="<%= qrCode %>" alt="Check-in QR" class="w-full h-full object-contain rounded-xl">
+      <div id="qr-code" class="w-56 h-56 rounded-xl overflow-hidden flex items-center justify-center">
+        <% if (typeof qrSvg !== 'undefined' && qrSvg) { %>
+          <%- qrSvg %>
         <% } else { %>
-          <div class="text-center">
+          <div class="text-center w-full">
             <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
             <span class="text-sm text-gray-400">Generating QR...</span>
           </div>
