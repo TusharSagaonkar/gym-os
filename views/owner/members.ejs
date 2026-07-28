@@ -2,7 +2,7 @@
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
       <h2 class="text-xl font-bold">Members</h2>
-      <p class="text-sm text-gray-500 mt-0.5"><%= totalCount || 0 %> total &middot; <%= activeCount || 0 %> active</p>
+      <p class="text-sm text-gray-500 mt-0.5"><%= members.length %> members found</p>
     </div>
     <div class="flex items-center gap-2">
       <a href="/owner/members/add" class="btn-primary gap-2 text-sm">
@@ -17,15 +17,15 @@
       <form method="GET" action="/owner/members" class="flex flex-col sm:flex-row gap-3">
         <div class="flex-1 relative">
           <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input type="search" name="q" value="<%= query || '' %>" placeholder="Search by name, phone, or email..."
+          <input type="search" name="search" value="<%= search || '' %>" placeholder="Search by name, phone, or email..."
             class="input pl-10" autofocus>
         </div>
         <select name="status" class="input max-w-[180px]">
-          <option value="">All Status</option>
-          <option value="active" <%= filterStatus === 'active' ? 'selected' : '' %>>Active</option>
-          <option value="expired" <%= filterStatus === 'expired' ? 'selected' : '' %>>Expired</option>
-          <option value="frozen" <%= filterStatus === 'frozen' ? 'selected' : '' %>>Frozen</option>
-          <option value="expiring_soon" <%= filterStatus === 'expiring_soon' ? 'selected' : '' %>>Expiring Soon</option>
+          <option value="all">All Status</option>
+          <option value="active" <%= status === 'active' ? 'selected' : '' %>>Active</option>
+          <option value="expired" <%= status === 'expired' ? 'selected' : '' %>>Expired</option>
+          <option value="frozen" <%= status === 'frozen' ? 'selected' : '' %>>Frozen</option>
+          <option value="expiring_soon" <%= status === 'expiring_soon' ? 'selected' : '' %>>Expiring Soon</option>
         </select>
         <button type="submit" class="btn-secondary">Filter</button>
       </form>
@@ -41,11 +41,12 @@
               <th class="text-left font-medium px-4 py-3">Plan</th>
               <th class="text-left font-medium px-4 py-3">Status</th>
               <th class="text-left font-medium px-4 py-3 hidden md:table-cell">Expiry</th>
-              <th class="text-right font-medium px-4 py-3">Actions</th>
+              <th class="text-right font-medium px-4 py-3">&nbsp;</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
           <% members.forEach(function(m) { %>
+            <% const ms = m.memberships && m.memberships.length ? m.memberships[0] : null; %>
             <tr class="table-row">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-3">
@@ -58,59 +59,42 @@
                   </div>
                 </div>
               </td>
-              <td class="px-4 py-3 text-gray-500 hidden sm:table-cell text-sm"><%= m.phone %></td>
+              <td class="px-4 py-3 text-gray-500 hidden sm:table-cell text-sm"><%= m.phone || '—' %></td>
               <td class="px-4 py-3">
-                <span class="text-sm font-medium"><%= m.plan_name %></span>
+                <span class="text-sm font-medium"><%= ms?.membership_plans?.name || '—' %></span>
               </td>
               <td class="px-4 py-3">
-                <% if (m.status === 'active') { %>
+                <% if (ms?.status === 'active') { %>
                   <span class="badge-success">Active</span>
-                <% } else if (m.status === 'expired') { %>
+                <% } else if (ms?.status === 'expired') { %>
                   <span class="badge-danger">Expired</span>
-                <% } else if (m.status === 'frozen') { %>
+                <% } else if (ms?.status === 'frozen') { %>
                   <span class="badge-info">Frozen</span>
-                <% } else if (m.status === 'expiring_soon') { %>
+                <% } else if (ms?.status === 'expiring_soon') { %>
                   <span class="badge-warning">Expiring</span>
                 <% } else { %>
-                  <span class="badge-neutral"><%= m.status %></span>
+                  <span class="badge-neutral">No plan</span>
                 <% } %>
               </td>
               <td class="px-4 py-3 text-gray-500 hidden md:table-cell text-sm">
-                <%= m.expiry_date ? new Date(m.expiry_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—' %>
+                <%= ms?.end_date ? new Date(ms.end_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—' %>
               </td>
               <td class="px-4 py-3 text-right">
-                <div class="flex items-center justify-end gap-1">
-                  <a href="/owner/members/<%= m.id %>" class="btn-ghost px-2.5 py-1.5 text-xs">View</a>
-                  <a href="/owner/members/<%= m.id %>/edit" class="btn-ghost px-2.5 py-1.5 text-xs">Edit</a>
-                </div>
+                <a href="/owner/members/<%= m.id %>" class="btn-ghost px-2.5 py-1.5 text-xs">View</a>
               </td>
             </tr>
           <% }); %>
           </tbody>
         </table>
       </div>
-
-      <% if (typeof pages !== 'undefined' && pages > 1) { %>
-      <div class="p-4 border-t border-gray-50 flex items-center justify-between">
-        <span class="text-xs text-gray-400">Page <%= page %> of <%= pages %></span>
-        <div class="flex gap-1">
-          <% if (page > 1) { %>
-            <a href="?page=<%= page - 1 %><%= query ? '&q=' + query : '' %>" class="btn-ghost px-3 py-1.5 text-xs">Prev</a>
-          <% } %>
-          <% if (page < pages) { %>
-            <a href="?page=<%= page + 1 %><%= query ? '&q=' + query : '' %>" class="btn-ghost px-3 py-1.5 text-xs">Next</a>
-          <% } %>
-        </div>
-      </div>
-      <% } %>
     <% } else { %>
       <div class="text-center py-16">
         <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
           <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         </div>
         <p class="text-sm font-medium text-gray-500">No members found</p>
-        <p class="text-xs text-gray-400 mt-1"><%= query ? 'Try a different search' : 'Add your first member to get started' %></p>
-        <% if (!query) { %>
+        <p class="text-xs text-gray-400 mt-1"><%= search ? 'Try a different search' : 'Add your first member' %></p>
+        <% if (!search) { %>
           <a href="/owner/members/add" class="btn-primary mt-4 text-sm">Add Member</a>
         <% } %>
       </div>

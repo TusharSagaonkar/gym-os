@@ -11,20 +11,12 @@ async function authMiddleware(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { user_id } = decoded;
-
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user_id)
-      .single();
-
-    if (error || !profile) {
-      res.locals.user = null;
-      return next();
-    }
-
-    res.locals.user = profile;
+    res.locals.user = {
+      id: decoded.user_id,
+      email: decoded.email,
+      full_name: decoded.full_name || 'User',
+      role: decoded.role || 'member',
+    };
     next();
   } catch {
     res.locals.user = null;
@@ -58,21 +50,25 @@ function requireRole(...roles) {
 async function gymMiddleware(req, res, next) {
   if (!res.locals.user) return next();
 
-  const activeGymId = req.cookies?.active_gym;
+  try {
+    const activeGymId = req.cookies?.active_gym;
 
-  if (activeGymId) {
-    const { data: gym } = await supabase.from('gyms').select('*').eq('id', activeGymId).single();
-    if (gym) {
-      res.locals.gym = gym;
-      res.locals.gymId = gym.id;
-      return next();
+    if (activeGymId) {
+      const { data: gym } = await supabase.from('gyms').select('*').eq('id', activeGymId).single();
+      if (gym) {
+        res.locals.gym = gym;
+        res.locals.gymId = gym.id;
+        return next();
+      }
     }
-  }
 
-  const { data: gyms } = await supabase.from('gyms').select('*').limit(1);
-  if (gyms?.length > 0) {
-    res.locals.gym = gyms[0];
-    res.locals.gymId = gyms[0].id;
+    const { data: gyms } = await supabase.from('gyms').select('*').limit(1);
+    if (gyms?.length > 0) {
+      res.locals.gym = gyms[0];
+      res.locals.gymId = gyms[0].id;
+    }
+  } catch {
+    // gym lookup failed silently, not critical
   }
 
   next();

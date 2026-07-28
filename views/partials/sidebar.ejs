@@ -11,13 +11,13 @@
 
   <div class="flex-1 overflow-auto py-3 px-3 space-y-0.5">
     <% if (user.role === 'owner') { %>
-      <%- include('partials/nav/owner_nav') %>
+      <%- include('nav/owner_nav') %>
     <% } else if (user.role === 'reception') { %>
-      <%- include('partials/nav/reception_nav') %>
+      <%- include('nav/reception_nav') %>
     <% } else if (user.role === 'trainer') { %>
-      <%- include('partials/nav/trainer_nav') %>
+      <%- include('nav/trainer_nav') %>
     <% } else { %>
-      <%- include('partials/nav/member_nav') %>
+      <%- include('nav/member_nav') %>
     <% } %>
   </div>
 

@@ -25,7 +25,12 @@ router.post('/login', async (req, res) => {
   }
 
   const token = jwt.sign(
-    { user_id: data.user.id, email: data.user.email },
+    {
+      user_id: data.user.id,
+      email: data.user.email,
+      full_name: data.user.user_metadata?.full_name || 'User',
+      role: data.user.user_metadata?.role || 'member',
+    },
     process.env.JWT_SECRET,
     { expiresIn: '7d' },
   );
@@ -37,15 +42,9 @@ router.post('/login', async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', data.user.id)
-    .single();
+  const role = data.user.user_metadata?.role || 'member';
 
-  if (!profile) return res.redirect('/auth/onboarding');
-
-  switch (profile.role) {
+  switch (role) {
     case 'owner': return res.redirect('/owner');
     case 'reception': return res.redirect('/reception');
     case 'trainer': return res.redirect('/trainer');
