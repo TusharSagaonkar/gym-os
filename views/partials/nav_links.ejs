@@ -1,0 +1,9 @@
+<% if (user.role === 'owner') { %>
+  <%- include('nav/owner_nav') %>
+<% } else if (user.role === 'reception') { %>
+  <%- include('nav/reception_nav') %>
+<% } else if (user.role === 'trainer') { %>
+  <%- include('nav/trainer_nav') %>
+<% } else { %>
+  <%- include('nav/member_nav') %>
+<% } %>
